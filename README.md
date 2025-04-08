@@ -5,8 +5,7 @@
 # List of required packages
 packages <- c(
   "dendextend", "tidyverse", "tibble", "gsubfn", 
-  "readxl", "data.tree"
-)
+  "readxl", "data.tree")
 
 # Install missing packages
 installed <- packages %in% rownames(installed.packages())
@@ -24,10 +23,13 @@ Open the neo4j software --> click "new" --> Create project --> Add Local DBMS, i
 
 
 ## Data preprocessing
-The recommended input is either raw count expression matrix or normalized expression matrix like TPM. Since the network computation normally need much larger resources, we recommend to start with matrix with around 1000 features. Some initial feature selections like differentially expressed genes (DEGs) selection are needed.
+The recommended input is either raw count expression matrix or normalized expression matrix like TPM. Since the network computation normally need much larger resources, we recommend to start with matrix with around 1000 features. 
+Some initial feature selections like differentially expressed genes (DEGs) selection are needed.
+
 <img src="https://github.com/yliu38/EGNF/blob/main/images/example_expression_matrix.png" width="380">
 
 ``` r
+source("https://github.com/yliu38/EGNF/blob/main/R/functions.R")
 # remove genes with 80% zeroes and na rows
 exp <- remove_sparse_rows(exp)
 # log2 and z-score normalization
@@ -64,15 +66,29 @@ write.table(url,"url_train.csv", sep=",",  col.names=F, row.names = F)
 A sample label file for the whole set, training set and testing set. There are two columns, the first column for sample id and the second one is for group label.
 
 ## Neo4j graph network building and graph algorithm implementation
-Open the neo4j software --> click the project made --> click the "..." on the right --> Open floder Import --> move the files including url_train.csv, folder for hierarchical trees to the import location
+Open the neo4j software --> click the project made --> click the "..." on the right --> Open floder Import --> move the files including url_train.csv, folder for hierarchical trees to the import directory
+
 Open terminal, run python scripts
-```
+### build networks and implement graph-based algorithms
+```python
 python create_filenodes.py # creating nodes for making graph nodes
 python create_nodes.py # making nodes and delete file nodes
 python create_relationships.py # making edges
 
 # after database construction, run graph algorithms including degree centrality and community detection
-python project_graph_sampling.py
+python project_graph_sampling.py # output results of algorithms 
 ```
 
-## R files to 
+### build networks for running GNNs
+```python
+python create_filenodes.py # creating nodes for making graph nodes
+python create_nodes.py # making nodes and delete file nodes
+python create_relationships_GNN.py # making edges
+
+python download.network.py # output sample networks for GNNs
+```
+
+## R programing for obtaining selected features using algorithm results
+``` r
+
+```
