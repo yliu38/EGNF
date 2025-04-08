@@ -5,7 +5,9 @@
 # List of required packages
 packages <- c(
   "dendextend", "tidyverse", "tibble", "gsubfn", 
-  "readxl", "data.tree")
+  "readxl", "data.tree", "tidyr", "boot", "RCurl",
+  "RJSONIO", "jsonlite", "foreach", "doParallel",
+  "R.utils")
 
 # Install missing packages
 installed <- packages %in% rownames(installed.packages())
@@ -74,6 +76,7 @@ Open terminal, run python scripts
 python create_filenodes.py # creating nodes for making graph nodes
 python create_nodes.py # making nodes and delete file nodes
 python create_relationships.py # making edges
+python output_id_table.py # output node ids for following feature selection process
 
 # after database construction, run graph algorithms including degree centrality and community detection
 python project_graph_sampling.py # output results of algorithms 
@@ -88,7 +91,59 @@ python create_relationships_GNN.py # making edges
 python download.network.py # output sample networks for GNNs
 ```
 
-## R programing for obtaining selected features using algorithm results
+## R programing for feature selection--part1
 ``` r
+# load graph ids
+annos <- read.csv("../algorithm_results/id_gene_map_100824.csv")
 
+# class 1
+# create matrix to store gene frequency, degree in communities
+path <- "../algorithm_results/random_gene_051424_pt5/algorithm_res_unpaired/"
+nruns <- 1e4
+genes <- unique(annos$gene)
+res_nw <- matrix(0,nruns,length(genes))
+res_score <- matrix(0,nruns,length(genes))
+colnames(res_nw) <- genes
+colnames(res_score) <- genes
+
+# fill the matrix with algorithm results
+## nruns is number of graph sampling; path is the directory storing the algorithm results
+matrix_out(nruns, path)
+
+# bootstrap test (one vs all other groups)
+## replace NA with 0
+res_nw[is.na(res_nw)] <- 0
+res_score[is.na(res_score)] <- 0
+
+# check the distribution
+summary(colSums(res_nw)); hist(colSums(res_nw))
+summary(colSums(res_score)); hist(colSums(res_score))
+# run bootstrap
+# other p-value correction methods include "fdr", "BH", "BY"
+p_table1 <- run_boot(res_nw, "bonferroni")
+p_table2 <- run_boot(res_score, "bonferroni")
+# do the above analysis for class 2 as well
+```
+
+## R programing for feature selection--part2
+considering the possible unstable connection of the local machine and server for doing pathway enrichment, 
+we recommend to run this step in terminal or server
+```Bash
+# the input include genes after initial selection like DEGs and files for Modularity Optimization (community detection)
+# the output is a matrix saving as Rdata
+nohup R CMD BATCH pathway_enrich_class1.R &
+nohup R CMD BATCH pathway_enrich_class2.R &
+```
+
+## R programing for feature selection--part3
+```r
+load(file="DB_pathway_class1.RData")
+load(file="DB_pathway_class2.RData")
+
+# a matrix to store the bootstrap result for pathway enrichment
+p_table3 <- run_boot(finalMatrix, "bonferroni")
+p_table_class1 <- cbind(p_table1, p_table2 ,p_table3)
+colnames(p_table_class1) <- c("p.value_frequency","p.adj_frequency","p.value_score","p.adj_score","p.value_path","p.adj_path")
+# filter out significant genes
+p_fre_sub <- p_fre[apply(p_fre[,c(3,4,7)], 1, function(row) any(row < 0.05)),]
 ```
