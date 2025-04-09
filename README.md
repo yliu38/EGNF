@@ -125,17 +125,19 @@ p_table2 <- run_boot(res_score, "bonferroni")
 # do the above analysis for class 2 as well
 ```
 
-## R for feature selection--part2
-considering the possible unstable connection of the local machine and server for doing pathway enrichment, 
-we recommend to run this step in terminal or server
-```Bash
+## Feature selection--part2
+Considering the possible unstable connection of the local machine for doing pathway enrichment, 
+we recommend to run this step in terminal or server.
+**bash code:**
+```bash
 # the input include genes after initial selection like DEGs and files for Modularity Optimization (community detection)
 # the output is a matrix saving as Rdata
 nohup R CMD BATCH pathway_enrich_class1.R &
 nohup R CMD BATCH pathway_enrich_class2.R &
 ```
 
-## R for feature selection--part3
+## Feature selection--part3
+**R code:**
 ```r
 # class1
 load(file="DB_pathway_class1.RData")
