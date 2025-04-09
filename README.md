@@ -245,21 +245,22 @@ write.csv(final_tar, "features_unpaired.csv")
 exp_train_sub <- exp_train[final_tar,]
 exp_test_sub <- exp_test[final_tar,]
 
-# directory is the location storing results, example can be "../train_gene_"
+# directory is the location storing results, example can be "./data_train_GNN/train_gene_"
 make_tree(exp_train_sub, directory)
 # generate url file for generating nodes in Neo4j
 gene_names <- rownames(exp_train_sub)
-file1 <- paste0("file:/data_train/gene_",gene_names,".csv")
+file1 <- paste0("file:/data_train_GNN/train_gene_",gene_names,".csv")
 
-# directory is the location storing results, example can be "../test_gene_"
+# directory is the location storing results, example can be "./data_test_GNN/test_gene_"
 make_tree(exp_test_sub, directory)
 # generate url file for generating nodes in Neo4j
 gene_names <- rownames(exp_test_sub)
-file2 <- paste0("file:/data_test/gene_",gene_names,".csv")
+file2 <- paste0("file:/data_test_GNN/test_gene_",gene_names,".csv")
 
 url = c("URL", file1, file2)
 write.table(url,"url_all.csv", sep=",",  col.names=F, row.names = F)
 ```
+**please move the generated data_train_GNN, data_test_GNN folder and url_all.csv to the import folder of Neo4j**
 
 ### Other files needed for network construction in GNN task
 A sample label file (lable_file) for the whole set, training set (lable_train) and testing set (lable_test). There are two columns, the first column for sample id and the second one is for group label.
@@ -268,7 +269,7 @@ A sample label file (lable_file) for the whole set, training set (lable_train) a
 
 **Bash code:**
 ```bash
-python create_filenodes.py # creating nodes for making graph nodes
+python create_filenodes.py # creating nodes for making graph nodes, you may need to replace the url file name with yours
 python create_nodes.py # making nodes and delete file nodes
 python create_relationships_GNN.py # making edges
 
