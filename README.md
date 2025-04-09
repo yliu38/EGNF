@@ -182,6 +182,7 @@ we recommend to run this step in terminal or server.
 nohup R CMD BATCH pathway_enrich_class1.R &
 nohup R CMD BATCH pathway_enrich_class2.R &
 ```
+if you encounter "schannel: CertGetCertificateChain trust error CERT_TRUST_IS_UNTRUSTED_ROOT", please use pathway_enrich_class1_re.R and pathway_enrich_class2_re.R
 
 ## Feature selection--part3
 
