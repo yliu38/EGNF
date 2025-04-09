@@ -190,7 +190,7 @@ tar <- setdiff(c(p_fre_sub1$gene,p_fre_sub2$gene), tmp)
 p_fre_sub1 <- p_fre_sub1[p_fre_sub1$gene %in% tar,]
 p_fre_sub2 <- p_fre_sub2[p_fre_sub2$gene %in% tar,]
 # please ensure these genes exist in testing set
-# select n genes each, here i set n=16, normally 4<n<26 
+# select n genes for each class, here I set n=16, the recommended range is 4<n<26 
 n=16
 p_fre_sub1 <- p_fre_sub1[order(p_fre_sub1$sum),]; p_fre_sub2 <- p_fre_sub2[order(p_fre_sub2$sum),]
 final_tar <-  c(p_fre_sub1$gene[1:n],p_fre_sub2$gene[1:n])
