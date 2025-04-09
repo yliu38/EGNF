@@ -9,13 +9,13 @@ library(foreach)
 library(doParallel)
 library(R.utils)
 
-# load exp matrix, you can any other initial feature selection other than DEGs
+# load exp matrix, you can use any other initial feature selection other than DEGs
 deseq2 <- read.csv("expression_deseq2_results.csv", row.names = 1)
 
 #### --------------------------------------------------------------------------------------------- ####
 # pathway enrichment analysis
 #### --------------------------------------------------------------------------------------------- ####
-DEGs <- deseq2$gene_name[1:500]
+DEGs <- deseq2$gene_name[1:1000]
 
 getEntrez <- postForm("https://toppgene.cchmc.org/API/lookup",
                       .opts = list(postfields = toJSON(list(Symbols = DEGs)),
