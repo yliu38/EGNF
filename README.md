@@ -1,6 +1,6 @@
 # Expression Graph Network Framework (EGNF)
 <p align="center">
-<img src="https://github.com/yliu38/EGNF/blob/main/image/overview.png" width="500">
+<img src="https://github.com/yliu38/EGNF/blob/main/image/overview.png" width="550">
 </p>
 
 ## Environment setup
