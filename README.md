@@ -121,7 +121,7 @@ Open terminal, run python scripts
 ```python
 python create_filenodes.py # creating nodes for making graph nodes
 python create_nodes.py # making nodes and delete file nodes
-python create_relationships.py # making edges
+python create_relationships.py # making edges, the default cutoff for common samples shared across edges is 4, may change according to your sample size
 python output_id_table.py # output node ids for following feature selection process
 
 # after database construction, run graph algorithms including degree centrality and community detection
@@ -223,7 +223,7 @@ p_fre_sub2 <- p_fre_sub2[p_fre_sub2$gene %in% tar,]
 n=16
 p_fre_sub1 <- p_fre_sub1[order(p_fre_sub1$sum),]; p_fre_sub2 <- p_fre_sub2[order(p_fre_sub2$sum),]
 final_tar <-  c(p_fre_sub1$gene[1:n],p_fre_sub2$gene[1:n])
-save(final_tar,file="unpaired_target32.Rdata")
+write.csv(final_tar, "features_unpaired.csv")
 ```
 
 ## Build networks for running GNNs
