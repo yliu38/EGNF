@@ -197,3 +197,5 @@ p_fre_sub1 <- p_fre_sub1[order(p_fre_sub1$sum),]; p_fre_sub2 <- p_fre_sub2[order
 final_tar <-  c(p_fre_sub1$gene[1:n],p_fre_sub2$gene[1:n])
 save(final_tar,file="unpaired_target32.Rdata")
 ```
+
+## Running GNNs
