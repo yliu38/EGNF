@@ -152,7 +152,9 @@ colnames(res_nw) <- genes
 colnames(res_score) <- genes
 
 # fill the matrix with algorithm results
-matrix_out(nruns, path)
+out <- matrix_out(nruns, path)
+res_nw <- out$res_nw
+res_score <- out$res_score
 
 # bootstrap test (one vs all other groups)
 ## replace NA with 0
@@ -190,10 +192,13 @@ load(file="DB_pathway_class1.RData")
 
 # a matrix to store the bootstrap result for pathway enrichment
 p_table3 <- run_boot(finalMatrix, "bonferroni")
+colnames(p_table3) <- c("p.value","p.adj")
+rownames(p_table3) <- colnames(finalMatrix)
+
 p_table_class1 <- cbind(p_table1, p_table2 )
-colnames(p_table) <- c("p.value_frequency","p.value_score","p.adj_frequency","p.adj_score")
-p_table$sig_or_not <- ifelse(p_table$p.adj_score<0.05 & p_table$p.adj_frequency<0.05, "Significant", "Not_significant")
-p_table$gene <- colnames(res_nw)
+colnames(p_table_class1) <- c("p.value_frequency","p.value_score","p.adj_frequency","p.adj_score")
+p_table_class1$sig_or_not <- ifelse(p_table_class1$p.adj_score<0.05 & p_table_class1$p.adj_frequency<0.05, "Significant", "Not_significant")
+p_table_class1$gene <- colnames(res_nw)
 # processing path enrichement results
 path_enrich_sub <- path_enrich[match(rownames(p_table3),path_enrich$Name),]
 path_genes <- list()
@@ -202,17 +207,17 @@ all_genes <- rep(NA,length(path_genes))
 for ( i in seq(length(path_genes))) {
   all_genes[i] <- paste(path_genes[[i]],collapse = "/")
 }
-df_path$genes <- all_genes[match(rownames(p_table3), path_enrich_sub$Name)]
+p_table3$genes <- all_genes[match(rownames(p_table3), path_enrich_sub$Name)]
 # scoring system
 ## include=T means including pathway enrichment filteration. include=F does not include
-p_fre_sub1 <- score_gene(df_path, p_fre, include=T)
+p_fre_sub1 <- score_gene(p_table3, p_table_class1, include=T)
 
 # class2
 load(file="DB_pathway_class2.RData")
 
 # run the above code again
 # scoring system
-p_fre_sub2 <- score_gene(df_path, p_fre, include=T)
+p_fre_sub2 <- score_gene(p_table3, p_table_class2, include=T)
 
 # features
 # only consider significant ones in terms of degree and frequency 
