@@ -91,7 +91,7 @@ python create_relationships_GNN.py # making edges
 python download.network.py # output sample networks for GNNs
 ```
 
-## R programing for feature selection--part1
+## R for feature selection--part1
 ``` r
 # load graph ids
 annos <- read.csv("../algorithm_results/id_gene_map_100824.csv")
@@ -125,7 +125,7 @@ p_table2 <- run_boot(res_score, "bonferroni")
 # do the above analysis for class 2 as well
 ```
 
-## R programing for feature selection--part2
+## R for feature selection--part2
 considering the possible unstable connection of the local machine and server for doing pathway enrichment, 
 we recommend to run this step in terminal or server
 ```Bash
@@ -135,7 +135,7 @@ nohup R CMD BATCH pathway_enrich_class1.R &
 nohup R CMD BATCH pathway_enrich_class2.R &
 ```
 
-## R programing for feature selection--part3
+## R for feature selection--part3
 ```r
 # class1
 load(file="DB_pathway_class1.RData")
