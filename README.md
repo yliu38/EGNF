@@ -53,7 +53,7 @@ exp_test <- exp[,!colnames(exp) %in% train_ind]
 ```
 
 ## One-dimensional hierarchical clustering
-### output csv files for network construction
+### Output csv files for network construction
 For graph-based feature selection task, please use exp_train only to generate hierarchical trees for avoiding data leakage.
 For building input for GNNs, please use this function for exp_train and exp_test, respectively
 
@@ -69,14 +69,14 @@ url = c("URL", file)
 write.table(url,"url_train.csv", sep=",",  col.names=F, row.names = F)
 ```
 
-### other files needed for network construction in GNN task
+### Other files needed for network construction in GNN task
 A sample label file for the whole set, training set and testing set. There are two columns, the first column for sample id and the second one is for group label.
 
 ## Neo4j graph network building and graph algorithm implementation
 Open the neo4j software --> click the project made --> click the "..." on the right --> Open floder Import --> move the files including url_train.csv, folder for hierarchical trees to the import directory
 
 Open terminal, run python scripts
-### build networks and implement graph-based algorithms
+### Build networks and implement graph-based algorithms
 
 **Bash code:**
 ```python
@@ -89,7 +89,7 @@ python output_id_table.py # output node ids for following feature selection proc
 python project_graph_sampling.py # output results of algorithms 
 ```
 
-### build networks for running GNNs
+### Build networks for running GNNs
 
 **Bash code:**
 ```bash
