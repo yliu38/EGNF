@@ -51,8 +51,8 @@ Open the neo4j software --> click "new" --> Create project --> Add Local DBMS, i
 
 
 ## Data preprocessing
-The recommended input is either raw count expression matrix or normalized expression matrix like TPM. Since the network computation normally need much larger resources, we recommend to start with matrix with around 1000 features. 
-Some initial feature selections like differentially expressed genes (DEGs) selection are needed.
+The recommended input is either raw count expression matrix or normalized expression matrix like TPM. Since the network computation normally need much larger resources, **we recommend to start with matrix with around 1000 features**. 
+**Some initial feature selections like differentially expressed genes (DEGs) selection are needed.**
 
 <img src="https://github.com/yliu38/EGNF/blob/main/image/example_expression_matrix.png" width="380">
 
@@ -77,7 +77,8 @@ source("https://github.com/yliu38/EGNF/blob/main/R/functions.R")
 # remove genes with 80% zeroes and na rows
 exp <- remove_sparse_rows(exp)
 # log2 and z-score normalization
-exp <- norm_dat(exp)
+# nor has options including "two.end", "up", "down" for choosing both high and low or high only or low only expressed clusters
+exp <- norm_dat(exp, nor="down")
 ```
 
 ## Data split
@@ -88,7 +89,7 @@ set.seed(123)
 n_spl = dim(exp)[2]
 train_ind <- sample(1:n_spl,n_spl*0.8)
 exp_train <- exp[,train_ind]
-exp_test <- exp[,!colnames(exp) %in% train_ind]
+exp_test <- exp[,-train_ind]
 ```
 
 ## One-dimensional hierarchical clustering
@@ -96,15 +97,24 @@ exp_test <- exp[,!colnames(exp) %in% train_ind]
 
 **R code:**
 ``` r
-# directory is the location storing results, example can be "../train_gene_"
-make_tree(exp_train, directory)
+# directory is the location storing results, example can be "./folder_name/train_gene_class1_"
+# group_label is your class, e.g. "primary" or "recurrent"
+make_tree(exp_train_class1, directory, group_label)
 
 # generate url file for generating nodes in Neo4j
-gene_names <- rownames(exp_train)
-file <- paste0("file:/genome/glioma_train/gene_",gene_names,".csv")
-url = c("URL", file)
+gene_names <- rownames(exp_train_class1)
+file1 <- paste0("file:/data_train/train_gene_class1_",gene_names,".csv") 
+
+# directory is the location storing results, example can be "./folder_name/train_gene_class2_"
+make_tree(exp_train_class2, directory, group_label)
+# generate url file for generating nodes in Neo4j
+gene_names <- rownames(exp_train_class2)
+file2 <- paste0("file:/data_train/train_gene_class2_",gene_names,".csv")
+
+url = c("URL", file1, file2)
 write.table(url,"url_train.csv", sep=",",  col.names=F, row.names = F)
 ```
+**please move the generated data_train folder and url_train.csv to the import folder of Neo4j**
 
 ## Neo4j graph network building and graph algorithm implementation
 Open the neo4j software --> click the project made --> click the "..." on the right --> Open floder Import --> move the files including url_train.csv, folder for hierarchical trees to the import directory
@@ -120,7 +130,8 @@ python create_relationships.py # making edges, the default cutoff for common sam
 python output_id_table.py # output node ids for following feature selection process (id_gene_map.csv)
 
 # after database construction, run graph algorithms including degree centrality and community detection
-python project_graph_sampling.py # output results of algorithms 
+python project_graph_sampling_class1.py
+python project_graph_sampling_class2.py # output results of algorithms, need to run this for two class separately 
 ```
 
 ## Feature selection--part1
@@ -128,11 +139,11 @@ python project_graph_sampling.py # output results of algorithms
 **R code:**
 ``` r
 # load graph ids
-annos <- read.csv("../algorithm_results/id_gene_map.csv")
+annos <- read.csv("id_gene_map.csv")
 
 # class 1
 # create matrix to store gene frequency, degree in communities
-path <- "../algorithm_results/random_gene_051424_pt5/algorithm_res_unpaired/"
+path <- "../algorithm_results/" # use the directory where you store the algorithms files starting with "Modularity_Optimization_" or "degree_cen_"
 nruns <- 1e4
 genes <- unique(annos$gene)
 res_nw <- matrix(0,nruns,length(genes))
@@ -165,7 +176,7 @@ we recommend to run this step in terminal or server.
 
 **Bash code:**
 ```bash
-# the input include genes after initial selection like DEGs and files for Modularity Optimization (community detection)
+# the input include genes after initial selection like DEGs and files for Modularity Optimization (community detection), please revise the files accordingly
 # the output is a Rdata file containing a matrix and dataframe for gene enrichment 
 nohup R CMD BATCH pathway_enrich_class1.R &
 nohup R CMD BATCH pathway_enrich_class2.R &
@@ -221,19 +232,8 @@ final_tar <-  c(p_fre_sub1$gene[1:n],p_fre_sub2$gene[1:n])
 write.csv(final_tar, "features_unpaired.csv")
 ```
 
-## Build networks for running GNNs
-
-**Bash code:**
-```bash
-python create_filenodes.py # creating nodes for making graph nodes
-python create_nodes.py # making nodes and delete file nodes
-python create_relationships_GNN.py # making edges
-
-python download.network.py # output sample networks for GNNs
-```
-
-## Running GNNs
-### Network construction
+## Network construction for GNNs
+### Clustering
 
 **R code:**
 ``` r
@@ -255,6 +255,20 @@ write.table(url,"url_all.csv", sep=",",  col.names=F, row.names = F)
 
 ### Other files needed for network construction in GNN task
 A sample label file (lable_file) for the whole set, training set (lable_train) and testing set (lable_test). There are two columns, the first column for sample id and the second one is for group label.
+
+### Build networks for running GNNs
+
+**Bash code:**
+```bash
+python create_filenodes.py # creating nodes for making graph nodes
+python create_nodes.py # making nodes and delete file nodes
+python create_relationships_GNN.py # making edges
+
+python download.network.py # output sample networks for GNNs, you may want to revise the output directory
+```
+
+## Running GNNs
+
 
 ### GNNs
 **Bash code:**
