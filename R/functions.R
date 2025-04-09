@@ -5,15 +5,27 @@ remove_sparse_rows <- function(df, threshold = 0.8) {
 
 
 # log2 and z-score normalization
-norm_dat <- function(df) {
+norm_dat <- function(df, nor) {
   df <- log2(df+1)
-  df <- apply(df,1,function(x) (x-mean(x))/sd(x))
+  
+  if (nor=="two.end") {
+    df <- apply(df,1,function(x) (x-mean(x))/sd(x))
+  }
+  else if (nor=="up") 
+    {
+    df <- apply(df,1,function(x) ((x - min(x)) / (max(x) - min(x)))*(2-1)+1)
+  }
+  else if (nor=="down")
+    {
+    df <- apply(df, 1, function(x) ((max(x) - x) / (max(x) - min(x))) * (2 - 1) + 1)
+  }
+  else {print("wrong input for nor")}
   df <- t(df)
 }
 
 
 # making trees
-make_tree <- function(dat, directory) {
+make_tree <- function(dat, directory, group_label) {
   no_of_genes <- dim(dat)[1]
   gene_names <- rownames(dat)
   
@@ -85,10 +97,10 @@ make_tree <- function(dat, directory) {
     df <- df[order(abs(as.numeric(df[,3])), decreasing = T),]
     nevent <- round(nrow(df) * 0.1)
     df$include <- c(rep("Y",nevent),rep("N",nrow(df)-nevent)) 
-    
+    df$group <- group_label
     # Provide column names
-    colnames(df) <- c('event_no', 'samples', 'median_exp', 'no_of_samples', 'gene_name', 'molecular_data', 'leaf_status',"dendrogram_height",
-                      "levels", "include")
+    colnames(df) <- c('event_no', 'samples', 'median_exp', 'no_of_samples', 'gene_name', 'event_name', 'leaf_status',"dendrogram_height",
+                      "levels", "include", "group")
     
     file_name = paste(directory, gene_name, ".csv", sep="")
     write.table(df, file=file_name, sep=",",row.names = F)
@@ -97,12 +109,12 @@ make_tree <- function(dat, directory) {
 
 
 # generate matrix storing gene frequency and degree
-matrix_out <- function(nruns, path) {system.time(
+matrix_out <- function(nruns=10000, path) {system.time(
   for(i in 1:nruns) {
     # read files and get community name
     print(paste0("the iteration ",i))
-    dat <- read.csv(paste0(path, "Modularity_Optimization_",i-1,".csv"))
-    degree <- read.csv(paste0(path, "degree_cen_",i-1,".csv"))
+    dat <- read.csv(paste0(path, "Modularity_Optimization_ran_gene_pre_",i-1,".csv"))
+    degree <- read.csv(paste0(path, "degree_cen_pre_",i-1,".csv"))
     tmp1 <- table(dat$communityId)
     # count communities with at least 5 nodes
     tmp2 <- tmp1[tmp1>4]
@@ -114,7 +126,9 @@ matrix_out <- function(nruns, path) {system.time(
     dat1$fre <- round(1/dat1$spl_size,3)
     res_nw[i,] <- dat1[match(colnames(res_nw),dat1$name), "fre"]
     res_score[i,] <- dat1[match(colnames(res_score),dat1$name),"score"]
-  })
+  }
+  )
+  return(list(res_nw = res_nw, res_score = res_score))
 }
 
 
@@ -127,7 +141,7 @@ meanfun <- function(data, i){
 
 ## test procedures
 run_boot <- function(dat, correction) {
-  p_table <- matrix(data=NA,ncol(res_score),2)
+  p_table <- matrix(data=NA,ncol(dat),2)
   for(i in seq(ncol(dat))) {
     d1 <- data.frame(xs1 = dat[,i]); d2 <- data.frame(xs2 = rowMeans(dat[,-i]))
     set.seed(123)
@@ -138,7 +152,7 @@ run_boot <- function(dat, correction) {
     
     p_table[i,1] <- res1$p.value
   }
-  p_table[,2] <- p.adjust(p_table[,2], method = correction, n = nrow(p_table))
+  p_table[,2] <- p.adjust(p_table[,1], method = correction, n = nrow(p_table))
   p_table <- as.data.frame(p_table)
   return(p_table)
 }
@@ -150,7 +164,7 @@ score_gene <- function(df_path, p_fre, include = T) {
   scores <- function(x) {match(x, sort(unique(x)))}
   
   if (include) {
-    df_long <- df_path[df_path$p.adj<0.05,c(1:4)] %>% separate_rows(genes, sep = "/"); df_long <- as.data.frame(df_long)
+    df_long <- df_path[df_path$p.adj<0.05,c(1:3)] %>% separate_rows(genes, sep = "/"); df_long <- as.data.frame(df_long)
     p_fre$p.value_path <- df_long[match(p_fre$gene,df_long$genes),"p.adj"]
     p_fre$p.value_path[is.na(p_fre$p.value_path)] <- 1
     # filter out significant genes
