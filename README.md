@@ -22,7 +22,7 @@ lapply(packages, library, character.only = TRUE)
 ```
 
 ## Python packages installation
-<img src="https://github.com/yliu38/EGNF/blob/main/images/cuda_compatibility.png" width="480">
+<img src="https://github.com/yliu38/EGNF/blob/main/images/cuda_compatibility.png" width="650">
 
 **Bash code:**
 ```bash
@@ -41,6 +41,8 @@ pip install scikit-learn scikit-optimize numpy pandas py2neo
 
 ## Neo4j desktop setup
 Please google neo4j desktop to download the neo4j software or you can use institutional neo4j server or neo4j clound
+
+Below is the step-by-step instructions for using Neo4j desktop
 Open the neo4j software --> click "new" --> Create project --> Add Local DBMS, input password and create --> click the project made and install Plugins of APOC and Graph Data Science Library
 
 
@@ -73,7 +75,7 @@ exp_test <- exp[,!colnames(exp) %in% train_ind]
 ## One-dimensional hierarchical clustering
 ### Output csv files for network construction
 For graph-based feature selection task, please use exp_train only to generate hierarchical trees for avoiding data leakage.
-For building input for GNNs, please use this function for exp_train and exp_test, respectively
+For building input for GNNs, please use this function for exp_train and exp_test, respectively.
 
 **R code:**
 ``` r
@@ -105,17 +107,6 @@ python output_id_table.py # output node ids for following feature selection proc
 
 # after database construction, run graph algorithms including degree centrality and community detection
 python project_graph_sampling.py # output results of algorithms 
-```
-
-### Build networks for running GNNs
-
-**Bash code:**
-```bash
-python create_filenodes.py # creating nodes for making graph nodes
-python create_nodes.py # making nodes and delete file nodes
-python create_relationships_GNN.py # making edges
-
-python download.network.py # output sample networks for GNNs
 ```
 
 ## Feature selection--part1
@@ -214,6 +205,17 @@ n=16
 p_fre_sub1 <- p_fre_sub1[order(p_fre_sub1$sum),]; p_fre_sub2 <- p_fre_sub2[order(p_fre_sub2$sum),]
 final_tar <-  c(p_fre_sub1$gene[1:n],p_fre_sub2$gene[1:n])
 save(final_tar,file="unpaired_target32.Rdata")
+```
+
+## Build networks for running GNNs
+
+**Bash code:**
+```bash
+python create_filenodes.py # creating nodes for making graph nodes
+python create_nodes.py # making nodes and delete file nodes
+python create_relationships_GNN.py # making edges
+
+python download.network.py # output sample networks for GNNs
 ```
 
 ## Running GNNs
