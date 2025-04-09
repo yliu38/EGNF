@@ -93,13 +93,11 @@ exp_test <- exp[,!colnames(exp) %in% train_ind]
 
 ## One-dimensional hierarchical clustering
 ### Output csv files for network construction
-For graph-based feature selection task, please use exp_train only to generate hierarchical trees for avoiding data leakage.
-For building input for GNNs, please use this function for exp_train and exp_test, respectively.
 
 **R code:**
 ``` r
-# dat is the expression matrix; directory is the location storing results, example can be "../train_gene_"
-make_tree(dat, directory)
+# directory is the location storing results, example can be "../train_gene_"
+make_tree(exp_train, directory)
 
 # generate url file for generating nodes in Neo4j
 gene_names <- rownames(exp_train)
@@ -238,7 +236,27 @@ python download.network.py # output sample networks for GNNs
 ```
 
 ## Running GNNs
+### network construction
 
+**R code:**
+``` r
+# directory is the location storing results, example can be "../train_gene_"
+make_tree(exp_train, directory)
+# generate url file for generating nodes in Neo4j
+gene_names <- rownames(exp_train)
+file1 <- paste0("file:/genome/data_train/gene_",gene_names,".csv")
+
+# directory is the location storing results, example can be "../test_gene_"
+make_tree(exp_test, directory)
+# generate url file for generating nodes in Neo4j
+gene_names <- rownames(exp_test)
+file2 <- paste0("file:/genome/data_test/gene_",gene_names,".csv")
+
+url = c("URL", file1, file2)
+write.table(url,"url_all.csv", sep=",",  col.names=F, row.names = F)
+```
+
+### GNNs
 **Bash code:**
 ```bash
 # the input is files including label_file, label_train, label_test, atoms_df (sample network node), bonds_df (sample network edges)
