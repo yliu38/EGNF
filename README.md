@@ -2,6 +2,7 @@
 <p align="center">
 <img src="https://github.com/yliu38/EGNF/blob/main/image/overview.png" width="800">
 </p>
+
 ## Environment setup
 ### R packages installation
 
