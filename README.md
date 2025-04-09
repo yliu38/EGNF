@@ -1,5 +1,7 @@
 # Expression graph network framework (EGNF)
-<img align="center" src="https://github.com/yliu38/EGNF/blob/main/image/overview.png" width="750">
+<p align="center">
+<img src="https://github.com/yliu38/EGNF/blob/main/image/overview.png" width="750">
+</p>
 ## Environment setup
 ### R packages installation
 
