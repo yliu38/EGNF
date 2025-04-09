@@ -22,7 +22,7 @@ lapply(packages, library, character.only = TRUE)
 ```
 
 ## Python packages installation
-<img src="https://github.com/yliu38/EGNF/blob/main/images/cuda_compatibility.png" width="380">
+<img src="https://github.com/yliu38/EGNF/blob/main/images/cuda_compatibility.png" width="480">
 
 **Bash code:**
 ```bash
