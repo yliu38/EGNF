@@ -21,6 +21,24 @@ if (any(!installed)) {
 lapply(packages, library, character.only = TRUE)
 ```
 
+## Python packages installation
+<img src="https://github.com/yliu38/EGNF/blob/main/images/cuda_compatibility.png" width="380">
+
+**Bash code:**
+```bash
+# PyTorch with GPU (please refer the image above for compatibility)
+pip install torch torchvision torchaudio
+
+# PyG dependencies (get correct versions based on your system and torch version)
+pip install torch-scatter torch-sparse torch-cluster torch-spline-conv -f https://data.pyg.org/whl/torch-2.0.0+cu118.html
+
+# Install torch-geometric
+pip install torch-geometric
+
+# Other packages
+pip install scikit-learn scikit-optimize numpy pandas py2neo 
+```
+
 ## Neo4j desktop setup
 Please google neo4j desktop to download the neo4j software or you can use institutional neo4j server or neo4j clound
 Open the neo4j software --> click "new" --> Create project --> Add Local DBMS, input password and create --> click the project made and install Plugins of APOC and Graph Data Science Library
@@ -100,7 +118,7 @@ python create_relationships_GNN.py # making edges
 python download.network.py # output sample networks for GNNs
 ```
 
-## R for feature selection--part1
+## Feature selection--part1
 
 **R code:**
 ``` r
@@ -199,3 +217,8 @@ save(final_tar,file="unpaired_target32.Rdata")
 ```
 
 ## Running GNNs
+
+**Bash code:**
+```bash
+python GCN_32genes_unpaired.py
+```
