@@ -269,8 +269,6 @@ python download.network.py # output sample networks for GNNs, you may want to re
 
 ## Running GNNs
 
-
-### GNNs
 **Bash code:**
 ```bash
 # the input is files including label_file, label_train, label_test, atoms_df (sample network node), bonds_df (sample network edges)
