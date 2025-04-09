@@ -137,13 +137,62 @@ nohup R CMD BATCH pathway_enrich_class2.R &
 
 ## R programing for feature selection--part3
 ```r
+# class1
 load(file="DB_pathway_class1.RData")
+
+# a matrix to store the bootstrap result for pathway enrichment
+p_table3 <- run_boot(finalMatrix, "bonferroni")
+p_table_class1 <- cbind(p_table1, p_table2 )
+colnames(p_table) <- c("p.value_frequency","p.value_score","p.adj_frequency","p.adj_score")
+p_table$sig_or_not <- ifelse(p_table$p.adj_score<0.05 & p_table$p.adj_frequency<0.05, "Significant", "Not_significant")
+p_table$gene <- colnames(res_nw)
+# processing path enrichement results
+path_enrich_sub <- path_enrich[match(rownames(p_table3),path_enrich$Name),]
+path_genes <- list()
+for (i in seq(nrow(path_enrich_sub))){path_genes[[i]] <- path_enrich_sub$Genes[i][[1]][,2]}
+all_genes <- rep(NA,length(path_genes))
+for ( i in seq(length(path_genes))) {
+  all_genes[i] <- paste(path_genes[[i]],collapse = "/")
+}
+df_path$genes <- all_genes[match(rownames(p_table3), path_enrich_sub$Name)]
+# scoring system
+## include=T means including pathway enrichment filteration. include=F does not include
+p_fre_sub1 <- score_gene(df_path, p_fre, include=T)
+
+# class2
 load(file="DB_pathway_class2.RData")
 
 # a matrix to store the bootstrap result for pathway enrichment
 p_table3 <- run_boot(finalMatrix, "bonferroni")
-p_table_class1 <- cbind(p_table1, p_table2 ,p_table3)
-colnames(p_table_class1) <- c("p.value_frequency","p.adj_frequency","p.value_score","p.adj_score","p.value_path","p.adj_path")
-# filter out significant genes
-p_fre_sub <- p_fre[apply(p_fre[,c(3,4,7)], 1, function(row) any(row < 0.05)),]
+p_table_class1 <- cbind(p_table1, p_table2 )
+colnames(p_table) <- c("p.value_frequency","p.value_score","p.adj_frequency","p.adj_score")
+p_table$sig_or_not <- ifelse(p_table$p.adj_score<0.05 & p_table$p.adj_frequency<0.05, "Significant", "Not_significant")
+p_table$gene <- colnames(res_nw)
+# processing path enrichement results
+path_enrich_sub <- path_enrich[match(rownames(p_table3),path_enrich$Name),]
+path_genes <- list()
+for (i in seq(nrow(path_enrich_sub))){path_genes[[i]] <- path_enrich_sub$Genes[i][[1]][,2]}
+all_genes <- rep(NA,length(path_genes))
+for ( i in seq(length(path_genes))) {
+  all_genes[i] <- paste(path_genes[[i]],collapse = "/")
+}
+df_path$genes <- all_genes[match(rownames(p_table3), path_enrich_sub$Name)]
+# scoring system
+p_fre_sub2 <- score_gene(df_path, p_fre, include=T)
+
+# features
+# only consider significant ones in terms of degree and frequency 
+p_fre_sub1 <- p_fre_sub1[p_fre_sub1$sig_or_not=="Significant",]
+p_fre_sub2 <- p_fre_sub2[p_fre_sub2$sig_or_not=="Significant",]
+# select non-overlapping genes
+tmp <- intersect(p_fre_sub1$gene,p_fre_sub2$gene)
+tar <- setdiff(c(p_fre_sub1$gene,p_fre_sub2$gene), tmp)
+p_fre_sub1 <- p_fre_sub1[p_fre_sub1$gene %in% tar,]
+p_fre_sub2 <- p_fre_sub2[p_fre_sub2$gene %in% tar,]
+# please ensure these genes exist in testing set
+# select n genes each, here i set n=16, normally 4<n<26 
+n=16
+p_fre_sub1 <- p_fre_sub1[order(p_fre_sub1$sum),]; p_fre_sub2 <- p_fre_sub2[order(p_fre_sub2$sum),]
+final_tar <-  c(p_fre_sub1$gene[1:n],p_fre_sub2$gene[1:n])
+save(final_tar,file="unpaired_target32.Rdata")
 ```
