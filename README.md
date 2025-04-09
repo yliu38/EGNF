@@ -85,7 +85,7 @@ exp <- norm_dat(exp)
 **R code:**
 ``` r
 set.seed(123)
-spl = dim(exp)[2]
+n_spl = dim(exp)[2]
 train_ind <- sample(1:n_spl,n_spl*0.8)
 exp_train <- exp[,train_ind]
 exp_test <- exp[,!colnames(exp) %in% train_ind]
