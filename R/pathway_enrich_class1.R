@@ -9,7 +9,7 @@ library(foreach)
 library(doParallel)
 library(R.utils)
 
-# load exp matrix, you can any other initial feature selection other than DEGs
+# load exp matrix, you can use any other initial feature selection other than DEGs
 deseq2 <- read.csv("expression_deseq2_results.csv", row.names = 1)
 
 #### --------------------------------------------------------------------------------------------- ####
