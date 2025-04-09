@@ -8,7 +8,7 @@ graph = Graph("neo4j://url", auth=("yliu34", "password"), name = "dbname")
 query2 = """
         WITH "match(n:nodes_chose) 
         
-        return n.name as name, n.median_exp as median_exp, n.no_of_unique_samples as sample_size, n.no_of_samples as sample_size,id(n) as nodeId, n.event_no as event_no" AS query
+        return n.name as gene, n.median_exp as median_exp, n.no_of_unique_samples as sample_size, n.no_of_samples as sample_size,id(n) as nodeId, n.event_no as event_no" AS query
         
         CALL apoc.export.csv.query(query, "id_gene_map.csv", {})
         
