@@ -152,7 +152,7 @@ colnames(res_nw) <- genes
 colnames(res_score) <- genes
 
 # fill the matrix with algorithm results
-## nruns is number of graph sampling; path is the directory storing the algorithm results
+## nruns is number of graph sampling; path is the directory you stored the algorithm results
 matrix_out(nruns, path)
 
 # bootstrap test (one vs all other groups)
