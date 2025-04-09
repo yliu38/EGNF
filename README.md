@@ -106,9 +106,6 @@ url = c("URL", file)
 write.table(url,"url_train.csv", sep=",",  col.names=F, row.names = F)
 ```
 
-### Other files needed for network construction in GNN task
-A sample label file (lable_file) for the whole set, training set (lable_train) and testing set (lable_test). There are two columns, the first column for sample id and the second one is for group label.
-
 ## Neo4j graph network building and graph algorithm implementation
 Open the neo4j software --> click the project made --> click the "..." on the right --> Open floder Import --> move the files including url_train.csv, folder for hierarchical trees to the import directory
 
@@ -255,6 +252,9 @@ file2 <- paste0("file:/genome/data_test/gene_",gene_names,".csv")
 url = c("URL", file1, file2)
 write.table(url,"url_all.csv", sep=",",  col.names=F, row.names = F)
 ```
+
+### Other files needed for network construction in GNN task
+A sample label file (lable_file) for the whole set, training set (lable_train) and testing set (lable_test). There are two columns, the first column for sample id and the second one is for group label.
 
 ### GNNs
 **Bash code:**
