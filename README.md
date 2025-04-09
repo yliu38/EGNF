@@ -233,7 +233,7 @@ python download.network.py # output sample networks for GNNs
 ```
 
 ## Running GNNs
-### network construction
+### Network construction
 
 **R code:**
 ``` r
