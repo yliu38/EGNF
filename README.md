@@ -140,7 +140,7 @@ p_table2 <- run_boot(res_score, "bonferroni")
 Considering the possible unstable connection of the local machine for doing pathway enrichment, 
 we recommend to run this step in terminal or server.
 
-**bash code:**
+**Bash code:**
 ```bash
 # the input include genes after initial selection like DEGs and files for Modularity Optimization (community detection)
 # the output is a matrix saving as Rdata
