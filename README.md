@@ -1,6 +1,7 @@
 # Expression graph network framework (EGNF)
-
-## R packages installation
+<img src="https://github.com/yliu38/EGNF/blob/main/images/overview.png" width="650">
+## Environment setup
+### R packages installation
 
 **R code:**
 ``` r
@@ -21,7 +22,7 @@ if (any(!installed)) {
 lapply(packages, library, character.only = TRUE)
 ```
 
-## Python packages installation
+### Python packages installation
 <img src="https://github.com/yliu38/EGNF/blob/main/images/cuda_compatibility.png" width="650">
 
 **Bash code:**
@@ -39,7 +40,7 @@ pip install torch-geometric
 pip install scikit-learn scikit-optimize numpy pandas py2neo 
 ```
 
-## Neo4j desktop setup
+### Neo4j desktop setup
 Please google neo4j desktop to download the neo4j software or you can use institutional neo4j server or neo4j clound
 
 Below is the step-by-step instructions for using Neo4j desktop
@@ -90,7 +91,7 @@ write.table(url,"url_train.csv", sep=",",  col.names=F, row.names = F)
 ```
 
 ### Other files needed for network construction in GNN task
-A sample label file for the whole set, training set and testing set. There are two columns, the first column for sample id and the second one is for group label.
+A sample label file (lable_file) for the whole set, training set (lable_train) and testing set (lable_test). There are two columns, the first column for sample id and the second one is for group label.
 
 ## Neo4j graph network building and graph algorithm implementation
 Open the neo4j software --> click the project made --> click the "..." on the right --> Open floder Import --> move the files including url_train.csv, folder for hierarchical trees to the import directory
@@ -152,7 +153,7 @@ we recommend to run this step in terminal or server.
 **Bash code:**
 ```bash
 # the input include genes after initial selection like DEGs and files for Modularity Optimization (community detection)
-# the output is a matrix saving as Rdata
+# the output is a Rdata file containing a matrix and dataframe for gene enrichment 
 nohup R CMD BATCH pathway_enrich_class1.R &
 nohup R CMD BATCH pathway_enrich_class2.R &
 ```
@@ -222,5 +223,6 @@ python download.network.py # output sample networks for GNNs
 
 **Bash code:**
 ```bash
+# the input is files including label_file, label_train, label_test, atoms_df (sample network node), bonds_df (sample network edges)
 python GCN_32genes_unpaired.py
 ```
