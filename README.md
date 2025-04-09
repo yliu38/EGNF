@@ -1,6 +1,8 @@
 # Expression graph network framework (EGNF)
 
 ## R packages installation
+
+**R code:**
 ``` r
 # List of required packages
 packages <- c(
@@ -30,6 +32,7 @@ Some initial feature selections like differentially expressed genes (DEGs) selec
 
 <img src="https://github.com/yliu38/EGNF/blob/main/images/example_expression_matrix.png" width="380">
 
+**R code:**
 ``` r
 source("https://github.com/yliu38/EGNF/blob/main/R/functions.R")
 # remove genes with 80% zeroes and na rows
@@ -40,6 +43,7 @@ exp <- norm_dat(exp)
 
 ## Data split
 
+**R code:**
 ``` r
 set.seed(123)
 spl = dim(exp)[2]
@@ -53,6 +57,7 @@ exp_test <- exp[,!colnames(exp) %in% train_ind]
 For graph-based feature selection task, please use exp_train only to generate hierarchical trees for avoiding data leakage.
 For building input for GNNs, please use this function for exp_train and exp_test, respectively
 
+**R code:**
 ``` r
 # dat is the expression matrix; directory is the location storing results, example can be "../train_gene_"
 make_tree(dat, directory)
@@ -72,6 +77,8 @@ Open the neo4j software --> click the project made --> click the "..." on the ri
 
 Open terminal, run python scripts
 ### build networks and implement graph-based algorithms
+
+**Bash code:**
 ```python
 python create_filenodes.py # creating nodes for making graph nodes
 python create_nodes.py # making nodes and delete file nodes
@@ -83,7 +90,9 @@ python project_graph_sampling.py # output results of algorithms
 ```
 
 ### build networks for running GNNs
-```python
+
+**Bash code:**
+```bash
 python create_filenodes.py # creating nodes for making graph nodes
 python create_nodes.py # making nodes and delete file nodes
 python create_relationships_GNN.py # making edges
@@ -92,6 +101,8 @@ python download.network.py # output sample networks for GNNs
 ```
 
 ## R for feature selection--part1
+
+**R code:**
 ``` r
 # load graph ids
 annos <- read.csv("../algorithm_results/id_gene_map_100824.csv")
@@ -128,6 +139,7 @@ p_table2 <- run_boot(res_score, "bonferroni")
 ## Feature selection--part2
 Considering the possible unstable connection of the local machine for doing pathway enrichment, 
 we recommend to run this step in terminal or server.
+
 **bash code:**
 ```bash
 # the input include genes after initial selection like DEGs and files for Modularity Optimization (community detection)
@@ -137,6 +149,7 @@ nohup R CMD BATCH pathway_enrich_class2.R &
 ```
 
 ## Feature selection--part3
+
 **R code:**
 ```r
 # class1
