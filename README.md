@@ -236,17 +236,21 @@ write.csv(final_tar, "features_unpaired.csv")
 
 **R code:**
 ``` r
+# use the above selected features for clustering
+exp_train_sub <- exp_train[final_tar,]
+exp_test_sub <- exp_test[final_tar,]
+
 # directory is the location storing results, example can be "../train_gene_"
-make_tree(exp_train, directory)
+make_tree(exp_train_sub, directory)
 # generate url file for generating nodes in Neo4j
-gene_names <- rownames(exp_train)
-file1 <- paste0("file:/genome/data_train/gene_",gene_names,".csv")
+gene_names <- rownames(exp_train_sub)
+file1 <- paste0("file:/data_train/gene_",gene_names,".csv")
 
 # directory is the location storing results, example can be "../test_gene_"
-make_tree(exp_test, directory)
+make_tree(exp_test_sub, directory)
 # generate url file for generating nodes in Neo4j
-gene_names <- rownames(exp_test)
-file2 <- paste0("file:/genome/data_test/gene_",gene_names,".csv")
+gene_names <- rownames(exp_test_sub)
+file2 <- paste0("file:/data_test/gene_",gene_names,".csv")
 
 url = c("URL", file1, file2)
 write.table(url,"url_all.csv", sep=",",  col.names=F, row.names = F)
