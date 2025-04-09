@@ -305,5 +305,5 @@ result = {
     "test_auc": test_auc
 }
 
-with open('../ten_times/pickles/GAT_DB_'+ str(job_index) +'.pickle' , 'wb') as fl:
+with open('../pickles/GAT_DB_'+ str(job_index) +'.pickle' , 'wb') as fl:
         pickle.dump(result, fl, pickle.HIGHEST_PROTOCOL)
