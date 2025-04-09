@@ -122,7 +122,7 @@ Open terminal, run python scripts
 python create_filenodes.py # creating nodes for making graph nodes
 python create_nodes.py # making nodes and delete file nodes
 python create_relationships.py # making edges, the default cutoff for common samples shared across edges is 4, may change according to your sample size
-python output_id_table.py # output node ids for following feature selection process
+python output_id_table.py # output node ids for following feature selection process (id_gene_map.csv)
 
 # after database construction, run graph algorithms including degree centrality and community detection
 python project_graph_sampling.py # output results of algorithms 
@@ -133,7 +133,7 @@ python project_graph_sampling.py # output results of algorithms
 **R code:**
 ``` r
 # load graph ids
-annos <- read.csv("../algorithm_results/id_gene_map_100824.csv")
+annos <- read.csv("../algorithm_results/id_gene_map.csv")
 
 # class 1
 # create matrix to store gene frequency, degree in communities
