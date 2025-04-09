@@ -242,5 +242,7 @@ python download.network.py # output sample networks for GNNs
 **Bash code:**
 ```bash
 # the input is files including label_file, label_train, label_test, atoms_df (sample network node), bonds_df (sample network edges)
+# you need to change number of features based on your real number.
+# if you do revise the input format, please revise the code accordingly.
 python GCN_32genes_unpaired.py
 ```
