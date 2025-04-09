@@ -8,8 +8,8 @@ graph = Graph("neo4j://url", auth=("id", "password"), name = "dbname")
 # add label for classes
 query2 = """
         match (n:nodes_chose)
-        where n.group = "class1"
-        set n:class1
+        where n.group = "class2"
+        set n:class2
         """
 print("\nAdd labels!\n")
 try:
@@ -48,16 +48,16 @@ for x in range(0,10000):
     # projection
     query1 = """
             // Cypher query
-            MATCH (n:nodes_chose:class1)
+            MATCH (n:nodes_chose:class2)
             WITH n.name AS geneName, rand() AS randomOrder, n
             ORDER BY geneName, randomOrder
             WITH geneName, COLLECT(n)[0] AS randomNode
             unwind(randomNode) as nme
-            match (m:nodes_chose:class1) WHERE id(m)=id(nme)
-            set m:tmp_class1
+            match (m:nodes_chose:class2) WHERE id(m)=id(nme)
+            set m:tmp_class2
             with m
             // Make a Cypher projection
-            MATCH (source:tmp_class1)-[r:Top_Events]->(target:tmp_class1)
+            MATCH (source:tmp_class2)-[r:Top_Events]->(target:tmp_class2)
             WITH gds.graph.project('random_sampling', source, target,{
             sourceNodeProperties: source {source: id(source) },
             targetNodeProperties: target {target: id(target) }}) AS g
@@ -115,9 +115,9 @@ for x in range(0,10000):
    
     # delete label
     query4 = """
-            //delete tmp_class1
-            match (n:tmp_class1)
-            remove n:tmp_class1
+            //delete tmp_class2
+            match (n:tmp_class2)
+            remove n:tmp_class2
             """
     print("\nRunning degree centrality!\n")
     try:
