@@ -1,5 +1,5 @@
 # Expression graph network framework (EGNF)
-<img src="https://github.com/yliu38/EGNF/blob/main/image/overview.png" width="650">
+<img src="https://github.com/yliu38/EGNF/blob/main/image/overview.png" width="750">
 ## Environment setup
 ### R packages installation
 
@@ -8,7 +8,7 @@
 # List of required packages
 packages <- c(
   "dendextend", "tidyverse", "tibble", "gsubfn", 
-  "readxl", "data.tree", "tidyr", "boot", "RCurl",
+  "readxl", "data.tree", "boot", "RCurl",
   "RJSONIO", "jsonlite", "foreach", "doParallel",
   "R.utils")
 
@@ -55,6 +55,21 @@ Some initial feature selections like differentially expressed genes (DEGs) selec
 
 **R code:**
 ``` r
+# load libraries
+library(dendextend)
+library(tidyverse)
+library(tibble)
+library(gsubfn)
+library(readxl)
+library(data.tree)
+library(boot)
+library(RCurl)
+library(RJSONIO)
+library(jsonlite)
+library(foreach)
+library(doParallel)
+library(R.utils)
+
 source("https://github.com/yliu38/EGNF/blob/main/R/functions.R")
 # remove genes with 80% zeroes and na rows
 exp <- remove_sparse_rows(exp)
