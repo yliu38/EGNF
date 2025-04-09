@@ -1,5 +1,5 @@
 # Expression graph network framework (EGNF)
-<img src="https://github.com/yliu38/EGNF/blob/main/images/overview.png" width="650">
+<img src="https://github.com/yliu38/EGNF/blob/main/image/overview.png" width="650">
 ## Environment setup
 ### R packages installation
 
@@ -23,7 +23,7 @@ lapply(packages, library, character.only = TRUE)
 ```
 
 ### Python packages installation
-<img src="https://github.com/yliu38/EGNF/blob/main/images/cuda_compatibility.png" width="650">
+<img src="https://github.com/yliu38/EGNF/blob/main/image/cuda_compatibility.png" width="650">
 
 **Bash code:**
 ```bash
@@ -51,7 +51,7 @@ Open the neo4j software --> click "new" --> Create project --> Add Local DBMS, i
 The recommended input is either raw count expression matrix or normalized expression matrix like TPM. Since the network computation normally need much larger resources, we recommend to start with matrix with around 1000 features. 
 Some initial feature selections like differentially expressed genes (DEGs) selection are needed.
 
-<img src="https://github.com/yliu38/EGNF/blob/main/images/example_expression_matrix.png" width="380">
+<img src="https://github.com/yliu38/EGNF/blob/main/image/example_expression_matrix.png" width="380">
 
 **R code:**
 ``` r
