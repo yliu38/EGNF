@@ -5,6 +5,22 @@ from py2neo import Graph
 # Login to the database
 graph = Graph("neo4j://url", auth=("id", "password"), name = "dbname")
 
+# add label for classes
+query2 = """
+        match (n:nodes_chose)
+        where n.group = "class1"
+        set n:class1
+        """
+print("\nAdd labels!\n")
+try:
+    result2 = graph.run(query2)
+    print(result2)
+except:
+    print('connection failed.............connect again!!!!!!!!!')
+    graph = Graph("neo4j://url", auth=("id", "password"), name = "dbname")
+    result2 = graph.run(query2)
+    print(result2)
+
 
 for x in range(0,10000):
     # First drop the graph if already exists
