@@ -32,13 +32,8 @@ except:
     print(result4)
 
 
-# change the directory 
-allgene = pd.read_csv('features_unpaired.csv')
-params = {}
-params['allgenes'] = list(allgene['x'])
-
 query2 = """
-        MATCH (n) WHERE n.name IN $allgenes AND (n.levels <> 1)
+        MATCH (n) WHERE n.levels <> 1
         SET n:Targets
         """
 try:
