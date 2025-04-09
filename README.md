@@ -13,7 +13,7 @@ packages <- c(
   "dendextend", "tidyverse", "tibble", "gsubfn", 
   "readxl", "data.tree", "boot", "RCurl",
   "RJSONIO", "jsonlite", "foreach", "doParallel",
-  "R.utils")
+  "R.utils", "httr")
 
 # Install missing packages
 installed <- packages %in% rownames(installed.packages())
@@ -72,6 +72,7 @@ library(jsonlite)
 library(foreach)
 library(doParallel)
 library(R.utils)
+library(httr)
 
 source("https://github.com/yliu38/EGNF/blob/main/R/functions.R")
 # remove genes with 80% zeroes and na rows
