@@ -22,7 +22,7 @@ lapply(packages, library, character.only = TRUE)
 ```
 
 ## Neo4j desktop setup
-please google neo4j desktop to download the neo4j software or you can use institutional neo4j server or neo4j clound
+Please google neo4j desktop to download the neo4j software or you can use institutional neo4j server or neo4j clound
 Open the neo4j software --> click "new" --> Create project --> Add Local DBMS, input password and create --> click the project made and install Plugins of APOC and Graph Data Science Library
 
 
@@ -177,21 +177,7 @@ p_fre_sub1 <- score_gene(df_path, p_fre, include=T)
 # class2
 load(file="DB_pathway_class2.RData")
 
-# a matrix to store the bootstrap result for pathway enrichment
-p_table3 <- run_boot(finalMatrix, "bonferroni")
-p_table_class1 <- cbind(p_table1, p_table2 )
-colnames(p_table) <- c("p.value_frequency","p.value_score","p.adj_frequency","p.adj_score")
-p_table$sig_or_not <- ifelse(p_table$p.adj_score<0.05 & p_table$p.adj_frequency<0.05, "Significant", "Not_significant")
-p_table$gene <- colnames(res_nw)
-# processing path enrichement results
-path_enrich_sub <- path_enrich[match(rownames(p_table3),path_enrich$Name),]
-path_genes <- list()
-for (i in seq(nrow(path_enrich_sub))){path_genes[[i]] <- path_enrich_sub$Genes[i][[1]][,2]}
-all_genes <- rep(NA,length(path_genes))
-for ( i in seq(length(path_genes))) {
-  all_genes[i] <- paste(path_genes[[i]],collapse = "/")
-}
-df_path$genes <- all_genes[match(rownames(p_table3), path_enrich_sub$Name)]
+# run the above code again
 # scoring system
 p_fre_sub2 <- score_gene(df_path, p_fre, include=T)
 
