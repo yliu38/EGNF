@@ -48,7 +48,8 @@ pip install scikit-learn scikit-optimize numpy pandas py2neo
 ### Neo4j desktop setup
 Please google neo4j desktop to download the neo4j software or you can use institutional neo4j server or neo4j clound
 
-Below is the step-by-step instructions for using Neo4j desktop
+Below is the step-by-step instructions for using Neo4j desktop:
+
 Open the neo4j software --> click "new" --> Create project --> Add Local DBMS, input password and create --> click the project made and install Plugins of APOC and Graph Data Science Library
 
 
