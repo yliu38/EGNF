@@ -240,6 +240,7 @@ write.csv(final_tar, "features_unpaired.csv")
 
 ## Network construction for GNNs
 ### Clustering
+**Build networks for training and testing data separately; do not use any label info for avoiding data leakage; default cutoff for number of samples shared between edages is 1, may change according to your sample size**
 
 **R code:**
 ``` r
