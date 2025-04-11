@@ -54,8 +54,8 @@ Open the neo4j software --> click "new" --> Create project --> Add Local DBMS, i
 
 
 ## Data preprocessing
-The recommended input is either raw count expression matrix or normalized expression matrix like TPM. Since the network computation normally need much larger resources, **we recommend to start with matrix with around 1000 features**. 
-**Some initial feature selections like differentially expressed genes (DEGs) selection are needed.**
+The recommended input is either raw count expression matrix or normalized expression matrix like TPM. Since the network computation normally need much larger resources, we recommend to start with matrix with **around 1000 features**. 
+Some initial feature selections like **differentially expressed genes (DEGs)** selection are needed.
 
 <img src="https://github.com/yliu38/EGNF/blob/main/image/example_expression_matrix.png" width="380">
 
