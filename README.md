@@ -95,7 +95,7 @@ train_ind <- sample(1:n_spl,n_spl*0.8)
 exp_train <- exp[,train_ind]
 exp_test <- exp[,-train_ind]
 ```
-If you have sample replicates or paired-samples, you may want to select patients for data split.
+If you have sample replicates or paired-samples, you may want to select patients for data split to avoid potential data leakage.
 
 ## One-dimensional hierarchical clustering
 ### Output csv files for network construction
