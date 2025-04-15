@@ -170,7 +170,7 @@ nodes = pd.DataFrame([])
 for spl_id in label_file['sid']:
     tmp = atoms_df.loc[atoms_df['samples'].str.contains(spl_id, regex=False)]
     tmp.insert(6, 'sample_id', spl_id)
-    nodes = nodes._append(tmp.iloc[:,1:], ignore_index=True)
+    nodes = nodes.append(tmp.iloc[:,1:], ignore_index=True)
 
 nodes = pd.merge(nodes, label_file, left_on='sample_id', right_on='sid', how='left')
 nodes = nodes.rename(columns={'group': 'y'})
@@ -191,7 +191,7 @@ edges = pd.DataFrame([])
 for spl_id in label_file['sid']:
     tmp = bonds_df.loc[bonds_df['common_samples'].str.contains(spl_id, regex=False)]
     tmp.insert(6, 'sample_id', spl_id)
-    edges = edges._append(tmp.iloc[:,1:], ignore_index=True)
+    edges = edges.append(tmp.iloc[:,1:], ignore_index=True)
     
 del atoms_df
 del bonds_df
