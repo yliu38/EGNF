@@ -1,4 +1,13 @@
 # Expression Graph Network Framework (EGNF)
+
+# Table of Contents
+- [Introduction](## Introduction)
+- [Installation](# Environment setup)
+- [Usage](#usage)
+- [Features](#features)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Introduction
 EGNF is an innovative tool for biomarker discovery, designed to tackle complex diseases like cancer. Powered by graph neural networks (GNNs) and advanced network-based feature engineering, EGNF uncovers predictive molecular signatures from high-dimensional gene expression data. By integrating gene expression, clinical attributes, and dynamic graph representations, it delivers exceptional classification accuracy and interpretability. Beyond biomedicine, EGNF’s flexible framework can potentially classify any high-dimensional dataset. Scalable, robust, and user-friendly, EGNF empowers researchers and clinicians to advance precision medicine and beyond. Dive into the code, documentation, and examples to get started!
 <p align="center">
