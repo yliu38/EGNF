@@ -5,8 +5,8 @@
 - **[Preparations](#preparations)**
 - **[Normalizations](#normalizations)**
 - **[Data Split](#data-split)**
-- **[Neo4j Graph Network Building and Graph Algorithm Implementation](#neo4j-graph-network-building-and-graph-algorithm-implementation)**
 - **[One-dimensional Hierarchical Clustering](#one-dimensional-hierarchical-clustering)**
+- **[Neo4j Graph Network Building and Graph Algorithm Implementation](#neo4j-graph-network-building-and-graph-algorithm-implementation)**
 - **[Feature Selection Part 1](#feature-selection-part1)**
 - **[Feature Selection Part 2](#feature-selection-part2)**
 - **[Feature Selection Part 3](#feature-selection-part3)**
