@@ -2,8 +2,8 @@
 
 ## Table of Contents
 - **[Introduction](#introduction)**
-- **[Installation](#environment-setup)**
-- **[Normalizations](#data-preprocessing)**
+- **[Preparations](#preparations)**
+- **[Normalizations](#normalizations)**
 - **[Data Split](#data-split)**
 - **[Neo4j Graph Network Building and Graph Algorithm Implementation](#neo4j-graph-network-building-and-graph-algorithm-implementation)**
 - **[Feature Selection Part 1](#feature-selection-part1)**
@@ -18,7 +18,7 @@ EGNF is an innovative tool for biomarker discovery, designed to tackle complex d
 <img src="https://github.com/yliu38/EGNF/blob/main/image/overview.png" width="550">
 </p>
 
-## Environment setup
+## Preparations
 ### R packages installation
 
 **R code:**
@@ -66,7 +66,7 @@ Below is the step-by-step instructions for using Neo4j desktop:
 Open the neo4j software --> click "new" --> Create project --> Add Local DBMS, input password and create --> click the project made and install Plugins of APOC and Graph Data Science Library
 
 
-## Data preprocessing
+## Normalizations
 The recommended input is either raw count expression matrix or normalized expression matrix like TPM. Since the network computation normally need much larger resources, we recommend to start with matrix with **around 1000 features**. 
 Some initial feature selections like **differentially expressed genes (DEGs)** selection are needed.
 
@@ -152,7 +152,7 @@ python project_graph_sampling_class1.py
 python project_graph_sampling_class2.py # output results of algorithms, need to run this for two class separately 
 ```
 
-## Feature selection--part1
+## Feature selection part1
 
 **R code:**
 ``` r
@@ -189,7 +189,7 @@ p_table2 <- run_boot(res_score, "bonferroni")
 # do the above analysis for class 2 as well
 ```
 
-## Feature selection--part2
+## Feature selection part2
 Considering the possible unstable connection of the local machine for doing pathway enrichment, 
 we recommend to run this step in terminal or server.
 
@@ -202,7 +202,7 @@ nohup R CMD BATCH pathway_enrich_class2.R &
 ```
 if you encounter "schannel: CertGetCertificateChain trust error CERT_TRUST_IS_UNTRUSTED_ROOT", please use pathway_enrich_class1_re.R and pathway_enrich_class2_re.R instead
 
-## Feature selection--part3
+## Feature selection part3
 
 **R code:**
 ```r
