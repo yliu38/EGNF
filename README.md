@@ -1,6 +1,6 @@
 # Expression Graph Network Framework (EGNF)
 
-# Table of Contents
+## Table of Contents
 - [Introduction](#introduction)
 - [Installation](#environment-setup)
 - [Normalizations](#data-preprocessing)
