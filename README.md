@@ -6,6 +6,7 @@
 - **[Normalizations](#normalizations)**
 - **[Data Split](#data-split)**
 - **[Neo4j Graph Network Building and Graph Algorithm Implementation](#neo4j-graph-network-building-and-graph-algorithm-implementation)**
+- **[One-dimensional Hierarchical Clustering](#one-dimensional-hierarchical-clustering)**
 - **[Feature Selection Part 1](#feature-selection-part1)**
 - **[Feature Selection Part 2](#feature-selection-part2)**
 - **[Feature Selection Part 3](#feature-selection-part3)**
@@ -98,7 +99,7 @@ exp <- remove_sparse_rows(exp)
 exp <- norm_dat(exp, nor="down")
 ```
 
-## Data split
+## Data Split
 
 **R code:**
 ``` r
@@ -110,7 +111,7 @@ exp_test <- exp[,-train_ind]
 ```
 If you have sample replicates or paired-samples, you may want to select patients for data split to avoid potential data leakage.
 
-## One-dimensional hierarchical clustering
+## One-dimensional Hierarchical Clustering
 ### Output csv files for network construction
 
 **R code:**
@@ -134,7 +135,7 @@ write.table(url,"url_train.csv", sep=",",  col.names=F, row.names = F)
 ```
 **please move the generated data_train folder and url_train.csv to the import folder of Neo4j**
 
-## Neo4j graph network building and graph algorithm implementation
+## Neo4j Graph Network Building and Graph Algorithm Implementation
 Open the neo4j software --> click the project made --> click the "..." on the right --> Open floder Import --> move the files including url_train.csv, folder for hierarchical trees to the import directory
 
 Open terminal, run python scripts
@@ -152,7 +153,7 @@ python project_graph_sampling_class1.py
 python project_graph_sampling_class2.py # output results of algorithms, need to run this for two class separately 
 ```
 
-## Feature selection part1
+## Feature Selection Part1
 
 **R code:**
 ``` r
@@ -189,7 +190,7 @@ p_table2 <- run_boot(res_score, "bonferroni")
 # do the above analysis for class 2 as well
 ```
 
-## Feature selection part2
+## Feature Selection Part2
 Considering the possible unstable connection of the local machine for doing pathway enrichment, 
 we recommend to run this step in terminal or server.
 
@@ -202,7 +203,7 @@ nohup R CMD BATCH pathway_enrich_class2.R &
 ```
 if you encounter "schannel: CertGetCertificateChain trust error CERT_TRUST_IS_UNTRUSTED_ROOT", please use pathway_enrich_class1_re.R and pathway_enrich_class2_re.R instead
 
-## Feature selection part3
+## Feature Selection Part3
 
 **R code:**
 ```r
@@ -255,7 +256,7 @@ final_tar <-  c(p_fre_sub1$gene[1:n],p_fre_sub2$gene[1:n])
 write.csv(final_tar, "features_unpaired.csv")
 ```
 
-## Network construction for GNNs
+## Network Construction for GNNs
 ### Clustering
 **Build networks for training and testing data separately; do not use any label info for avoiding data leakage; default cutoff for number of samples shared between edages is 1, may change according to your sample size**
 
