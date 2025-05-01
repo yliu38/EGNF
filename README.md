@@ -15,6 +15,9 @@
 
 ## Introduction
 EGNF is an innovative tool for biomarker discovery, designed to tackle complex diseases like cancer. Powered by graph neural networks (GNNs) and advanced network-based feature engineering, EGNF uncovers predictive molecular signatures from high-dimensional gene expression data. By integrating gene expression, clinical attributes, and dynamic graph representations, it delivers exceptional classification accuracy and interpretability. Beyond biomedicine, EGNF’s flexible framework can potentially classify any high-dimensional dataset. Scalable, robust, and user-friendly, EGNF empowers researchers and clinicians to advance precision medicine and beyond. Dive into the code, documentation, and examples to get started!
+
+If you use this tool in your work, please cite the following paper:
+[Your Paper Title], bioRxiv, https://www.biorxiv.org/content/10.1101/2025.04.28.651033v1
 <p align="center">
 <img src="https://github.com/yliu38/EGNF/blob/main/image/overview.png" width="550">
 </p>
