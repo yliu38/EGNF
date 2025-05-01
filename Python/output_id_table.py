@@ -3,7 +3,7 @@ from py2neo import Graph
 
 
 # Login to the database
-graph = Graph("neo4j://url", auth=("yliu34", "password"), name = "dbname")
+graph = Graph("neo4j://url", auth=("id", "password"), name = "dbname")
 
 query2 = """
         WITH "match(n:nodes_chose) 
@@ -22,6 +22,6 @@ try:
     print(result2)
 except:
     print('connection failed.............connect again!!!!!!!!!')
-    graph = Graph("neo4j://url", auth=("yliu34", "password"), name = "dbname")
+    graph = Graph("neo4j://url", auth=("id", "password"), name = "dbname")
     result2 = graph.run(query2)
     print(result2)
