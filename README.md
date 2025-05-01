@@ -98,7 +98,7 @@ source("https://github.com/yliu38/EGNF/blob/main/R/functions.R")
 exp <- remove_sparse_rows(exp)
 # log2 and z-score normalization
 # nor has options including "two.end", "up", "down" for choosing both high and low or high only or low only expressed clusters
-exp <- norm_dat(exp, nor="down")
+exp <- norm_dat(exp, nor="two.end")
 ```
 
 ## Data Split
@@ -120,6 +120,7 @@ If you have sample replicates or paired-samples, you may want to select patients
 ``` r
 # directory is the location storing results, example can be "./folder_name/train_gene_class1_"
 # group_label is your class, e.g. "primary" or "recurrent"
+# exp_train_class1 <- exp_train[,colnames(exp_train_class1) %in% class1_ids]
 make_tree(exp_train_class1, directory, group_label)
 
 # generate url file for generating nodes in Neo4j
