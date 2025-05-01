@@ -127,13 +127,13 @@ make_tree(exp_train_class1, directory, group_label)
 
 # generate url file for generating nodes in Neo4j
 gene_names <- rownames(exp_train_class1)
-file1 <- paste0("file:/data_train/train_gene_class1_",gene_names,".csv") 
+file1 <- paste0(directory,gene_names,".csv") 
 
 # directory is the location storing results, example can be "./folder_name/train_gene_class2_"
 make_tree(exp_train_class2, directory, group_label)
 # generate url file for generating nodes in Neo4j
 gene_names <- rownames(exp_train_class2)
-file2 <- paste0("file:/data_train/train_gene_class2_",gene_names,".csv")
+file2 <- paste0(directory,gene_names,".csv")
 
 url = c("URL", file1, file2)
 write.table(url,"url_train.csv", sep=",",  col.names=F, row.names = F)
