@@ -122,7 +122,7 @@ If you have sample replicates or paired-samples, you may want to select patients
 ``` r
 # directory is the location storing results, example can be "./folder_name/train_gene_class1_"
 # group_label is your class, e.g. "primary" or "recurrent"
-# exp_train_class1 <- exp_train[,colnames(exp_train_class1) %in% class1_ids]
+# exp_train_class1 <- exp_train[,colnames(exp_train) %in% class1_ids]
 make_tree(exp_train_class1, directory, group_label)
 
 # generate url file for generating nodes in Neo4j
