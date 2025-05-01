@@ -5,8 +5,8 @@ EXPRESSION GRAPH NETWORK FRAMEWORK FOR BIOMARKER DISCOVERY, bioRxiv, https://www
 ## Table of Contents
 - **[Introduction](#introduction)**
 - **[Preparations](#preparations)**
-- **[Normalizations](#normalizations)**
-- **[Data Split](#data-split)**
+- **[Preprocessing](#preprocessing)**
+- **[Data Split and Normalization](#data-split-and-normalization)**
 - **[One-dimensional Hierarchical Clustering](#one-dimensional-hierarchical-clustering)**
 - **[Neo4j Graph Network Building and Graph Algorithm Implementation](#neo4j-graph-network-building-and-graph-algorithm-implementation)**
 - **[Feature Selection Part 1](#feature-selection-part1)**
@@ -69,7 +69,7 @@ Below is the step-by-step instructions for using Neo4j desktop:
 Open the neo4j software --> click "new" --> Create project --> Add Local DBMS, input password and create --> click the project made and install Plugins of APOC and Graph Data Science Library
 
 
-## Normalizations
+## Preprocessing
 The recommended input is either raw count expression matrix or normalized expression matrix like TPM. Since the network computation normally need much larger resources, we recommend to start with matrix with **around 1000 features**. 
 Some initial feature selections like **differentially expressed genes (DEGs)** selection are needed.
 
@@ -96,12 +96,9 @@ library(httr)
 source("https://github.com/yliu38/EGNF/blob/main/R/functions.R")
 # remove genes with 80% zeroes and na rows
 exp <- remove_sparse_rows(exp)
-# log2 and z-score normalization
-# nor has options including "two.end", "up", "down" for choosing both high and low or high only or low only expressed clusters
-exp <- norm_dat(exp, nor="two.end")
 ```
 
-## Data Split
+## Data Split and Normalization
 
 **R code:**
 ``` r
@@ -110,6 +107,11 @@ n_spl = dim(exp)[2]
 train_ind <- sample(1:n_spl,n_spl*0.8)
 exp_train <- exp[,train_ind]
 exp_test <- exp[,-train_ind]
+
+# log2 and z-score normalization
+# nor has options including "two.end", "up", "down" for choosing both high and low or high only or low only expressed clusters
+exp_train <- norm_dat(exp_train, nor="two.end")
+exp_test <- norm_dat(exp_test, nor="two.end")
 ```
 If you have sample replicates or paired-samples, you may want to select patients for data split to avoid potential data leakage.
 
