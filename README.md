@@ -1,32 +1,47 @@
 # Expression Graph Network Framework (EGNF)
-If you use this tool in your work, please cite the following paper:
-EXPRESSION GRAPH NETWORK FRAMEWORK FOR BIOMARKER DISCOVERY, bioRxiv, https://www.biorxiv.org/content/10.1101/2025.04.28.651033v2
+
+If you use this tool in your work, please cite:  
+**EXPRESSION GRAPH NETWORK FRAMEWORK FOR BIOMARKER DISCOVERY**  
+*bioRxiv* https://www.biorxiv.org/content/10.1101/2025.04.28.651033v2
 
 ## Table of Contents
-- **[Introduction](#introduction)**
-- **[Preparations](#preparations)**
-- **[Preprocessing](#preprocessing)**
-- **[Data Split and Normalization](#data-split-and-normalization)**
-- **[One-dimensional Hierarchical Clustering](#one-dimensional-hierarchical-clustering)**
-- **[Neo4j Graph Network Building and Graph Algorithm Implementation](#neo4j-graph-network-building-and-graph-algorithm-implementation)**
-- **[Feature Selection Part 1](#feature-selection-part1)**
-- **[Feature Selection Part 2](#feature-selection-part2)**
-- **[Feature Selection Part 3](#feature-selection-part3)**
-- **[Network Construction for GNNs](#network-construction-for-gnns)**
-- **[Running GNNs](#running-gnns)**
+- [Introduction](#introduction)
+- [Installation](#installation)
+  - [R Packages](#r-packages)
+  - [Python Packages](#python-packages)
+  - [Neo4j Setup](#neo4j-setup)
+- [Workflow](#workflow)
+  - [1. Data Preprocessing](#1-data-preprocessing)
+  - [2. Data Split and Normalization](#2-data-split-and-normalization)  
+  - [3. Hierarchical Clustering](#3-hierarchical-clustering)
+  - [4. Graph Network Construction](#4-graph-network-construction)
+  - [5. Graph Algorithm Implementation](#5-graph-algorithm-implementation)
+  - [6. Feature Selection](#6-feature-selection)
+  - [7. GNN Network Construction](#7-gnn-network-construction)
+  - [8. GNN Training and Evaluation](#8-gnn-training-and-evaluation)
+- [Troubleshooting](#troubleshooting)
+- [References](#references)
 
 ## Introduction
-EGNF is an innovative tool for biomarker discovery, designed to tackle complex diseases like cancer. Powered by graph neural networks (GNNs) and advanced network-based feature engineering, EGNF uncovers predictive molecular signatures from high-dimensional gene expression data. By integrating gene expression, clinical attributes, and dynamic graph representations, it delivers exceptional classification accuracy and interpretability. Beyond biomedicine, EGNF’s flexible framework can potentially classify any high-dimensional dataset. Scalable, robust, and user-friendly, EGNF empowers researchers and clinicians to advance precision medicine and beyond. Dive into the code, documentation, and examples to get started!
+
+EGNF is an innovative framework for biomarker discovery designed to address complex diseases like cancer. By leveraging graph neural networks (GNNs) and advanced network-based feature engineering, EGNF uncovers predictive molecular signatures from high-dimensional gene expression data.
+
+Key features:
+- Integration of gene expression, clinical attributes, and dynamic graph representations
+- Exceptional classification accuracy and interpretability
+- Flexible framework applicable beyond biomedicine
+- Scalable, robust, and user-friendly implementation
+
 <p align="center">
 <img src="https://github.com/yliu38/EGNF/blob/main/image/overview.png" width="550">
 </p>
 
-## Preparations
-### R packages installation
+## Installation
 
-**R code:**
-``` r
-# List of required packages
+### R Packages
+
+```r
+# Required packages
 packages <- c(
   "dendextend", "tidyverse", "tibble", "gsubfn", 
   "readxl", "data.tree", "boot", "RCurl",
@@ -39,45 +54,51 @@ if (any(!installed)) {
   install.packages(packages[!installed])
 }
 
-# Load the packages
+# Load all packages
 lapply(packages, library, character.only = TRUE)
 ```
 
-### Python packages installation
-<img src="https://github.com/yliu38/EGNF/blob/main/image/cuda_compatibility.png" width="650">
+### Python Packages
 
-**Bash code:**
+CUDA compatibility reference:
+
+<p align="center">
+<img src="https://github.com/yliu38/EGNF/blob/main/image/cuda_compatibility.png" width="650">
+</p>
+
 ```bash
-# PyTorch with GPU (please refer the image above for compatibility)
+# PyTorch with GPU (select version based on your CUDA version)
 pip install torch torchvision torchaudio
 
-# PyG dependencies (get correct versions based on your system and torch version)
+# PyG dependencies (adjust based on your system and torch version)
 pip install torch-scatter torch-sparse torch-cluster torch-spline-conv -f https://data.pyg.org/whl/torch-2.0.0+cu118.html
 
 # Install torch-geometric
 pip install torch-geometric
 
-# Other packages
+# Other dependencies
 pip install scikit-learn scikit-optimize numpy pandas py2neo 
 ```
 
-### Neo4j desktop setup
-Please google neo4j desktop to download the neo4j software or you can use institutional neo4j server or neo4j clound
+### Neo4j Setup
 
-Below is the step-by-step instructions for using Neo4j desktop:
+1. Download and install Neo4j Desktop from the official website
+2. Create a new project
+3. Add a Local DBMS (set password and create)
+4. Install required plugins:
+   - APOC
+   - Graph Data Science Library
 
-Open the neo4j software --> click "new" --> Create project --> Add Local DBMS, input password and create --> click the project made and install Plugins of APOC and Graph Data Science Library
+## Workflow
 
+### 1. Data Preprocessing
 
-## Preprocessing
-The recommended input is either raw count expression matrix or normalized expression matrix like TPM. Since the network computation normally need much larger resources, we recommend to start with matrix with **around 1000 features**. 
-Some initial feature selections like **differentially expressed genes (DEGs)** selection are needed.
+EGNF works best with raw count expression matrices or normalized expression data (e.g., TPM). To manage computational resources, we recommend starting with approximately **1,000 features**.
 
-<img src="https://github.com/yliu38/EGNF/blob/main/image/example_expression_matrix.png" width="380">
+Initial feature selection (e.g., differentially expressed genes) is recommended before proceeding.
 
-**R code:**
-``` r
-# load libraries
+```r
+# Load utilities
 library(dendextend)
 library(tidyverse)
 library(tibble)
@@ -93,221 +114,256 @@ library(doParallel)
 library(R.utils)
 library(httr)
 
+# Source helper functions
 source("https://github.com/yliu38/EGNF/blob/main/R/functions.R")
-# remove genes with 80% zeroes and na rows
+
+# Remove rows with >80% zeros or NA values
 exp <- remove_sparse_rows(exp)
 ```
 
-## Data Split and Normalization
+### 2. Data Split and Normalization
 
-**R code:**
-``` r
+```r
 set.seed(123)
 n_spl = dim(exp)[2]
-train_ind <- sample(1:n_spl,n_spl*0.8)
-exp_train <- exp[,train_ind]
-exp_test <- exp[,-train_ind]
+train_ind <- sample(1:n_spl, n_spl*0.8)
+exp_train <- exp[, train_ind]
+exp_test <- exp[, -train_ind]
 
-# log2 and z-score normalization
-# nor has options including "two.end", "up", "down" for choosing both high and low or high only or low only expressed clusters
+# Log2 transformation and z-score normalization
+# Options: "two.end" (both high and low), "up" (high only), "down" (low only)
 exp_train <- norm_dat(exp_train, nor="two.end")
 exp_test <- norm_dat(exp_test, nor="two.end")
 ```
-If you have sample replicates or paired-samples, you may want to select patients for data split to avoid potential data leakage.
 
-## One-dimensional Hierarchical Clustering
-### Output csv files for network construction
+> **Note:** For paired samples or replicates, consider patient-based data splits to prevent data leakage.
 
-**R code:**
-``` r
-# directory is the location storing results, example can be "./folder_name/train_gene_class1_"
-# group_label is your class, e.g. "primary" or "recurrent"
-# exp_train_class1 <- exp_train[,colnames(exp_train) %in% class1_ids]
+### 3. Hierarchical Clustering
+
+Generate hierarchical clustering trees and prepare files for network construction:
+
+```r
+# For Class 1 samples
+# directory: location for results (e.g., "./folder_name/train_gene_class1_")
+# group_label: class label (e.g., "primary" or "recurrent")
 make_tree(exp_train_class1, directory, group_label)
 
-# generate url file for generating nodes in Neo4j
+# Generate URL file for Neo4j nodes
 gene_names <- rownames(exp_train_class1)
-file1 <- paste0(directory,gene_names,".csv") 
+file1 <- paste0(directory, gene_names, ".csv") 
 
-# directory is the location storing results, example can be "./folder_name/train_gene_class2_"
+# Repeat for Class 2 samples
 make_tree(exp_train_class2, directory, group_label)
-# generate url file for generating nodes in Neo4j
 gene_names <- rownames(exp_train_class2)
-file2 <- paste0(directory,gene_names,".csv")
+file2 <- paste0(directory, gene_names, ".csv")
 
+# Create URL file for Neo4j import
 url = c("URL", file1, file2)
-write.table(url,"url_train.csv", sep=",",  col.names=F, row.names = F)
+write.table(url, "url_train.csv", sep=",", col.names=F, row.names=F)
 ```
-**please move the generated data_train folder and url_train.csv to the import folder of Neo4j**
 
-## Neo4j Graph Network Building and Graph Algorithm Implementation
-Open the neo4j software --> click the project made --> click the "..." on the right --> Open floder Import --> move the files including url_train.csv, folder for hierarchical trees to the import directory
+> **Important:** Move the generated data folder and url_train.csv to Neo4j's import directory.
 
-Open terminal, run python scripts
-### Build networks and implement graph-based algorithms
+### 4. Graph Network Construction
 
-**Bash code:**
+1. Open Neo4j Desktop
+2. Access your project's import folder (via "..." menu → "Open folder Import")
+3. Copy your clustering data and URL files to this folder
+4. Run the following Python scripts in your terminal:
+
 ```python
-python create_filenodes.py # creating nodes for making graph nodes
-python create_nodes.py # making nodes and delete file nodes
-python create_relationships.py # making edges, the default cutoff for common samples shared across edges is 4, may change according to your sample size
-python output_id_table.py # output node ids for following feature selection process (id_gene_map.csv)
-
-# after database construction, run graph algorithms including degree centrality and community detection
-python project_graph_sampling_class1.py
-python project_graph_sampling_class2.py # output results of algorithms, need to run this for two class separately 
+# Create nodes and relationships
+python create_filenodes.py     # Create file nodes
+python create_nodes.py         # Convert to graph nodes and delete file nodes
+python create_relationships.py  # Create edges (default cutoff: 4 shared samples)
+python output_id_table.py      # Output node IDs for feature selection (id_gene_map.csv)
 ```
 
-## Feature Selection Part1
+### 5. Graph Algorithm Implementation
 
-**R code:**
-``` r
-# load graph ids
+Run graph algorithms for feature analysis:
+
+```python
+python project_graph_sampling_class1.py  # Run algorithms on Class 1
+python project_graph_sampling_class2.py  # Run algorithms on Class 2
+```
+
+### 6. Feature Selection
+
+The feature selection process involves three parts:
+
+#### Part 1: Graph-based Features
+
+```r
+# Load graph IDs
 annos <- read.csv("id_gene_map.csv")
 
-# class 1
-# create matrix to store gene frequency, degree in communities
-path <- "../algorithm_results/" # use the directory where you store the algorithms files starting with "Modularity_Optimization_" or "degree_cen_"
+# Set up matrices for algorithm results
+path <- "../algorithm_results/"  # Directory with algorithm results
 nruns <- 1e4
 genes <- unique(annos$gene)
-res_nw <- matrix(0,nruns,length(genes))
-res_score <- matrix(0,nruns,length(genes))
+res_nw <- matrix(0, nruns, length(genes))
+res_score <- matrix(0, nruns, length(genes))
 colnames(res_nw) <- genes
 colnames(res_score) <- genes
 
-# fill the matrix with algorithm results
+# Fill matrices with algorithm results
 out <- matrix_out(nruns, path)
 res_nw <- out$res_nw
 res_score <- out$res_score
 
-# bootstrap test (one vs all other groups)
-## replace NA with 0
+# Replace NA values with 0
 res_nw[is.na(res_nw)] <- 0
 res_score[is.na(res_score)] <- 0
 
-# check the distribution
-summary(colSums(res_nw)); hist(colSums(res_nw))
-summary(colSums(res_score)); hist(colSums(res_score))
-# run bootstrap
-# other p-value correction methods include "fdr", "BH", "BY"
+# Check distributions
+summary(colSums(res_nw))
+hist(colSums(res_nw))
+summary(colSums(res_score))
+hist(colSums(res_score))
+
+# Bootstrap analysis (p-value correction methods: "bonferroni", "fdr", "BH", "BY")
 p_table1 <- run_boot(res_nw, "bonferroni")
 p_table2 <- run_boot(res_score, "bonferroni")
-# do the above analysis for class 2 as well
+
+# Repeat for Class 2
 ```
 
-## Feature Selection Part2
-Considering the possible unstable connection of the local machine for doing pathway enrichment, 
-we recommend to run this step in terminal or server.
+#### Part 2: Pathway Enrichment
 
-**Bash code:**
+For stability, run pathway enrichment on a server:
+
 ```bash
-# the input include genes after initial selection like DEGs and files for Modularity Optimization (community detection), please revise the files accordingly
-# the output is a Rdata file containing a matrix and dataframe for gene enrichment 
+# Run enrichment analysis for both classes
 nohup R CMD BATCH pathway_enrich_class1.R &
 nohup R CMD BATCH pathway_enrich_class2.R &
 ```
-if you encounter "schannel: CertGetCertificateChain trust error CERT_TRUST_IS_UNTRUSTED_ROOT", please use pathway_enrich_class1_re.R and pathway_enrich_class2_re.R instead
 
-## Feature Selection Part3
+> **Troubleshooting:** If you encounter "schannel: CertGetCertificateChain trust error CERT_TRUST_IS_UNTRUSTED_ROOT", use pathway_enrich_class1_re.R and pathway_enrich_class2_re.R instead.
 
-**R code:**
+#### Part 3: Feature Integration
+
 ```r
-# class1
+# Class 1 analysis
 load(file="DB_pathway_class1.RData")
 
-# a matrix to store the bootstrap result for pathway enrichment
+# Bootstrap for pathway enrichment
 p_table3 <- run_boot(finalMatrix, "bonferroni")
-colnames(p_table3) <- c("p.value","p.adj")
+colnames(p_table3) <- c("p.value", "p.adj")
 rownames(p_table3) <- colnames(finalMatrix)
 
-p_table_class1 <- cbind(p_table1, p_table2 )
-colnames(p_table_class1) <- c("p.value_frequency","p.value_score","p.adj_frequency","p.adj_score")
-p_table_class1$sig_or_not <- ifelse(p_table_class1$p.adj_score<0.05 & p_table_class1$p.adj_frequency<0.05, "Significant", "Not_significant")
+# Combine p-values
+p_table_class1 <- cbind(p_table1, p_table2)
+colnames(p_table_class1) <- c("p.value_frequency", "p.value_score", "p.adj_frequency", "p.adj_score")
+p_table_class1$sig_or_not <- ifelse(p_table_class1$p.adj_score < 0.05 & 
+                                   p_table_class1$p.adj_frequency < 0.05, 
+                                   "Significant", "Not_significant")
 p_table_class1$gene <- colnames(res_nw)
-# processing path enrichement results
-path_enrich_sub <- path_enrich[match(rownames(p_table3),path_enrich$Name),]
+
+# Process pathway enrichment results
+path_enrich_sub <- path_enrich[match(rownames(p_table3), path_enrich$Name),]
 path_genes <- list()
-for (i in seq(nrow(path_enrich_sub))){path_genes[[i]] <- path_enrich_sub$Genes[i][[1]][,2]}
-all_genes <- rep(NA,length(path_genes))
-for ( i in seq(length(path_genes))) {
-  all_genes[i] <- paste(path_genes[[i]],collapse = "/")
+for (i in seq(nrow(path_enrich_sub))) {
+  path_genes[[i]] <- path_enrich_sub$Genes[i][[1]][,2]
+}
+all_genes <- rep(NA, length(path_genes))
+for (i in seq(length(path_genes))) {
+  all_genes[i] <- paste(path_genes[[i]], collapse = "/")
 }
 p_table3$genes <- all_genes[match(rownames(p_table3), path_enrich_sub$Name)]
-# scoring system
-## include=T means including pathway enrichment filteration. include=F does not include
+
+# Score genes (include=T means applying pathway enrichment filter)
 p_fre_sub1 <- score_gene(p_table3, p_table_class1, include=T)
 
-# class2
+# Class 2 analysis
 load(file="DB_pathway_class2.RData")
-
-# run the above code again
-# scoring system
+# Repeat the above steps
 p_fre_sub2 <- score_gene(p_table3, p_table_class2, include=T)
 
-# features
-# only consider significant ones in terms of degree and frequency 
-p_fre_sub1 <- p_fre_sub1[p_fre_sub1$sig_or_not=="Significant",]
-p_fre_sub2 <- p_fre_sub2[p_fre_sub2$sig_or_not=="Significant",]
-# select non-overlapping genes
-tmp <- intersect(p_fre_sub1$gene,p_fre_sub2$gene)
-tar <- setdiff(c(p_fre_sub1$gene,p_fre_sub2$gene), tmp)
+# Final feature selection
+# Filter for significant features
+p_fre_sub1 <- p_fre_sub1[p_fre_sub1$sig_or_not == "Significant",]
+p_fre_sub2 <- p_fre_sub2[p_fre_sub2$sig_or_not == "Significant",]
+
+# Select non-overlapping genes
+tmp <- intersect(p_fre_sub1$gene, p_fre_sub2$gene)
+tar <- setdiff(c(p_fre_sub1$gene, p_fre_sub2$gene), tmp)
 p_fre_sub1 <- p_fre_sub1[p_fre_sub1$gene %in% tar,]
 p_fre_sub2 <- p_fre_sub2[p_fre_sub2$gene %in% tar,]
-# please ensure these genes exist in testing set
-# select n genes for each class, here I set n=16, the recommended range is 4<n<26 
-n=16
-p_fre_sub1 <- p_fre_sub1[order(p_fre_sub1$sum),]; p_fre_sub2 <- p_fre_sub2[order(p_fre_sub2$sum),]
-final_tar <-  c(p_fre_sub1$gene[1:n],p_fre_sub2$gene[1:n])
+
+# Select top n genes for each class (recommended: 4 < n < 26)
+n <- 16
+p_fre_sub1 <- p_fre_sub1[order(p_fre_sub1$sum),]
+p_fre_sub2 <- p_fre_sub2[order(p_fre_sub2$sum),]
+final_tar <- c(p_fre_sub1$gene[1:n], p_fre_sub2$gene[1:n])
 write.csv(final_tar, "features_unpaired.csv")
 ```
 
-## Network Construction for GNNs
-### Clustering
-**Build networks for training and testing data separately; do not use any label info for avoiding data leakage; default cutoff for number of samples shared between edages is 1, may change according to your sample size**
+### 7. GNN Network Construction
 
-**R code:**
-``` r
-# use the above selected features for clustering
+#### Prepare Clustering Data
+
+```r
+# Filter expression data to selected features
 exp_train_sub <- exp_train[final_tar,]
 exp_test_sub <- exp_test[final_tar,]
 
-# directory is the location storing results, example can be "./data_train_GNN/train_gene_"
+# Generate clustering trees for training data
+# directory example: "./data_train_GNN/train_gene_"
 make_tree(exp_train_sub, directory)
-# generate url file for generating nodes in Neo4j
 gene_names <- rownames(exp_train_sub)
-file1 <- paste0("file:/data_train_GNN/train_gene_",gene_names,".csv")
+file1 <- paste0("file:/data_train_GNN/train_gene_", gene_names, ".csv")
 
-# directory is the location storing results, example can be "./data_test_GNN/test_gene_"
+# Generate clustering trees for testing data
+# directory example: "./data_test_GNN/test_gene_"
 make_tree(exp_test_sub, directory)
-# generate url file for generating nodes in Neo4j
 gene_names <- rownames(exp_test_sub)
-file2 <- paste0("file:/data_test_GNN/test_gene_",gene_names,".csv")
+file2 <- paste0("file:/data_test_GNN/test_gene_", gene_names, ".csv")
 
+# Create URL file
 url = c("URL", file1, file2)
-write.table(url,"url_all.csv", sep=",",  col.names=F, row.names = F)
-```
-**please move the generated data_train_GNN, data_test_GNN folder and url_all.csv to the import folder of Neo4j**
-
-### Other files needed for network construction in GNN task
-A sample label file (lable_file) for the whole set, training set (lable_train) and testing set (lable_test). There are two columns, the first column for sample id and the second one is for group label.
-
-### Build networks for running GNNs
-
-**Bash code:**
-```bash
-python create_filenodes.py # creating nodes for making graph nodes, you may need to replace the url file name with yours
-python create_nodes.py # making nodes and delete file nodes
-python create_relationships_GNN.py # making edges
-
-python download.network.py # output sample networks for GNNs, you may want to revise the output directory
+write.table(url, "url_all.csv", sep=",", col.names=F, row.names=F)
 ```
 
-## Running GNNs
+> **Important:** Move the generated data folders and url_all.csv to Neo4j's import directory.
 
-**Bash code:**
+#### Prepare Label Files
+
+Create three label files:
+1. `label_file`: Sample labels for the entire dataset
+2. `label_train`: Sample labels for the training set
+3. `label_test`: Sample labels for the testing set
+
+Each file should have two columns:
+- First column: Sample ID
+- Second column: Group label
+
+#### Build Sample Networks
+
 ```bash
-# the input is files including label_file, label_train, label_test, atoms_df (sample network node), bonds_df (sample network edges)
-# you may need to change number of features and output directory based on your situations.
-# if you revise the input format, you would need to revise the code accordingly.
+python create_filenodes.py         # Create file nodes
+python create_nodes.py             # Convert to graph nodes
+python create_relationships_GNN.py  # Create edges (default cutoff: 1 shared sample)
+python download.network.py         # Export sample networks for GNN
+```
+
+### 8. GNN Training and Evaluation
+
+```bash
+# Run GNN with the prepared data
+# Adjust input paths and feature counts as needed
 python GCN_32genes_unpaired.py
 ```
+
+## Troubleshooting
+
+- **Certificate errors during pathway enrichment:** Use the alternate scripts (pathway_enrich_class*_re.R)
+- **Memory issues:** Reduce the number of initial features or increase system resources
+- **Neo4j connection problems:** Verify Neo4j service is running and credentials are correct
+- **Edge cutoff adjustments:** Modify thresholds based on your sample size in create_relationships.py
+
+## References
+
+1. EXPRESSION GRAPH NETWORK FRAMEWORK FOR BIOMARKER DISCOVERY, bioRxiv, https://www.biorxiv.org/content/10.1101/2025.04.28.651033v2
+2. Neo4j Documentation: https://neo4j.com/docs/
+3. PyTorch Geometric: https://pytorch-geometric.readthedocs.io/
