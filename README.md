@@ -4,7 +4,7 @@ If you use this tool in your work, please cite [https://doi.org/10.1101/2025.04.
 ```bibtex
 @article{liuExpressionGraphNetwork2025,
   title     = {Expression Graph Network Framework for Biomarker Discovery},
-  author    = {Liu, Yang and Huse, Jason T. and Kannan, Kasthuri and The GLASS Consortium},
+  author    = {Liu, Yang and Huse, Jason T. and Kannan, Kasthuri},
   year      = {2025},
   journal   = {bioRxiv},
   publisher = {Cold Spring Harbor Laboratory},
