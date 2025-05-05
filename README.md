@@ -1,16 +1,13 @@
 # Expression Graph Network Framework (EGNF)
 
 If you use this tool in your work, please cite:  
-@article{liuExpressionGraphNetwork2025,
-  title = {Expression Graph Network Framework for Biomarker Discovery},
-  author = {Liu, Yang and Huse, Jason T. and Kannan, Kasthuri},
-  year = {2025},
-  journal = {bioRxiv},
-  publisher = {Cold Spring Harbor Laboratory},
-  doi = {10.1101/2025.04.28.651033},
-  url = {https://www.biorxiv.org/content/10.1101/2025.04.28.651033v2},
-  note = {Preprint}
-}
+**Authors**: Yang Liu, Jason T. Huse, Kasthuri Kannan  
+**Year**: 2025  
+**Journal**: bioRxiv  
+**Publisher**: Cold Spring Harbor Laboratory  
+**DOI**: [10.1101/2025.04.28.651033](https://doi.org/10.1101/2025.04.28.651033)  
+**URL**: [https://www.biorxiv.org/content/10.1101/2025.04.28.651033v2](https://www.biorxiv.org/content/10.1101/2025.04.28.651033v2)  
+**Note**: Preprint
 
 
 ## Table of Contents
