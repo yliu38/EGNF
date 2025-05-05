@@ -18,8 +18,21 @@ import gc
 import pickle
 
 
-# parameters
-n_fea = 32
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--n_fea', type=int, required=True, help='Number of input features')
+parser.add_argument('--label_file', type=str, required=True, help='Path to label file')
+parser.add_argument('--label_train', type=str, required=True, help='Path to train label file')
+parser.add_argument('--label_test', type=str, required=True, help='Path to test label file')
+parser.add_argument('--atoms_df', type=str, required=True, help='Path to atoms dataframe')
+parser.add_argument('--bonds_df', type=str, required=True, help='Path to bonds dataframe')
+parser.add_argument('--out_dir', type=str, required=True, help='Output directory to save results')
+args = parser.parse_args()
+
+n_fea = args.n_fea
+
 
 # Set max_split_size_mb to reduce fragmentation issues
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
@@ -160,12 +173,12 @@ os.environ["PYTHONHASHSEED"] = str(seed)
 # GPU
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # load labels
-label_file = pd.read_csv('lables_file.csv')
-label_train = pd.read_csv('lables_train.csv')
-label_test = pd.read_csv('lables_test.csv')
+label_file = pd.read_csv(args.label_file)
+label_train = pd.read_csv(args.label_train)
+label_test = pd.read_csv(args.label_test)
 
 # prepare nodes data for the model
-atoms_df = pd.read_csv('allnodes_features_unpaired.csv')
+atoms_df = pd.read_csv(args.atoms_df)
 atoms_df['samples'] = atoms_df['samples'].astype(str)
 atoms_df.shape
 nodes = pd.DataFrame([])
@@ -177,7 +190,7 @@ nodes = pd.merge(nodes, label_file, left_on='sample_id', right_on='sid', how='le
 nodes = nodes.rename(columns={'group': 'y'})
 nodes['Row_Index'] = nodes.groupby('sample_id').cumcount()
 # prepare edges data for the model
-bonds_df = pd.read_csv('alledges_features_unpaired.csv')
+bonds_df = pd.read_csv(args.bonds_df)
 bonds_df['common_samples'] = bonds_df['common_samples'].astype(str)
 bonds_df.shape
 bonds_df = bonds_df.iloc[:,[0,1,4,5,6,7]]
@@ -282,6 +295,6 @@ result = {
     "test_auc": test_auc
 }
 
-with open('../pickles/GATv2_DB_'+ str(job_index) +'.pickle' , 'wb') as fl:
+with open(os.path.join(args.out_dir, 'result.pickle') , 'wb') as fl:
         pickle.dump(result, fl, pickle.HIGHEST_PROTOCOL)
 
