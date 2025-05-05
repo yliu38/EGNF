@@ -76,6 +76,7 @@ CUDA compatibility reference:
 <p align="center">
 <img src="https://github.com/yliu38/EGNF/blob/main/image/cuda_compatibility.png" width="650">
 </p>
+
 #### Bash
 ```bash
 # PyTorch with GPU (select version based on your CUDA version)
