@@ -50,7 +50,6 @@ Key features:
 ## Installation
 
 ### R Packages
-**R**
 ```r
 # Required packages
 packages <- c(
@@ -70,14 +69,12 @@ lapply(packages, library, character.only = TRUE)
 ```
 
 ### Python Packages
-
 CUDA compatibility reference:
 
 <p align="center">
 <img src="https://github.com/yliu38/EGNF/blob/main/image/cuda_compatibility.png" width="650">
 </p>
 
-**Bash**
 ```bash
 # PyTorch with GPU (select version based on your CUDA version)
 pip install torch torchvision torchaudio
@@ -93,7 +90,6 @@ pip install scikit-learn scikit-optimize numpy pandas py2neo argparse
 ```
 
 ### Neo4j Setup
-
 1. Download and install Neo4j Desktop from the official website
 2. Create a new project
 3. Add a Local DBMS (set password and create)
@@ -102,13 +98,12 @@ pip install scikit-learn scikit-optimize numpy pandas py2neo argparse
    - Graph Data Science Library
 
 ## Workflow
-
 ### 1. Data Preprocessing
 
 EGNF works best with raw count expression matrices or normalized expression data (e.g., TPM). To manage computational resources, we recommend starting with approximately **1,000 features**.
 
 Initial feature selection (e.g., differentially expressed genes) is recommended before proceeding.
-**R**
+
 ```r
 # Load utilities
 library(dendextend)
@@ -134,7 +129,6 @@ exp <- remove_sparse_rows(exp)
 ```
 
 ### 2. Data Split and Normalization
-**R**
 ```r
 set.seed(123)
 n_spl = dim(exp)[2]
@@ -151,9 +145,8 @@ exp_test <- norm_dat(exp_test, nor="two.end")
 > **Note:** For paired samples or replicates, consider patient-based data splits to prevent data leakage.
 
 ### 3. Hierarchical Clustering
-
 Generate hierarchical clustering trees and prepare files for network construction:
-**R**
+
 ```r
 # For Class 1 samples
 # directory: location for results (e.g., "./folder_name/train_gene_class1_")
@@ -182,7 +175,7 @@ write.table(url, "url_train.csv", sep=",", col.names=F, row.names=F)
 2. Access your project's import folder (via "..." menu → "Open folder Import")
 3. Copy your clustering data and URL files to this folder
 4. Run the following Python scripts in your terminal:
-**Bash**
+
 ```bash
 # Create nodes and relationships
 python create_filenodes.py     # Create file nodes
@@ -194,7 +187,7 @@ python output_id_table.py      # Output node IDs for feature selection (id_gene_
 ### 5. Graph Algorithm Implementation
 
 Run graph algorithms for feature analysis:
-**Bash**
+
 ```bash
 python project_graph_sampling_class1.py  # Run algorithms on Class 1
 python project_graph_sampling_class2.py  # Run algorithms on Class 2
@@ -205,7 +198,6 @@ python project_graph_sampling_class2.py  # Run algorithms on Class 2
 The feature selection process involves three parts:
 
 #### Part 1: Graph-based Features
-**R**
 ```r
 # Load graph IDs
 annos <- read.csv("id_gene_map.csv")
@@ -244,7 +236,7 @@ p_table2 <- run_boot(res_score, "bonferroni")
 #### Part 2: Pathway Enrichment
 
 For stability, run pathway enrichment on a server:
-**Bash**
+
 ```bash
 # Run enrichment analysis for both classes
 nohup R CMD BATCH pathway_enrich_class1.R &
@@ -254,7 +246,7 @@ nohup R CMD BATCH pathway_enrich_class2.R &
 > **Troubleshooting:** If you encounter "schannel: CertGetCertificateChain trust error CERT_TRUST_IS_UNTRUSTED_ROOT", use pathway_enrich_class1_re.R and pathway_enrich_class2_re.R instead.
 
 #### Part 3: Feature Integration
-**R**
+
 ```r
 # Class 1 analysis
 load(file="DB_pathway_class1.RData")
@@ -314,7 +306,6 @@ write.csv(final_tar, "features_unpaired.csv")
 ### 7. GNN Network Construction
 
 #### Prepare Clustering Data
-**R**
 ```r
 # Filter expression data to selected features
 exp_train_sub <- exp_train[final_tar,]
@@ -351,7 +342,7 @@ Each file should have two columns:
 - Second column: Group label
 
 #### Build Sample Networks
-**Bash**
+
 ```bash
 python create_filenodes.py         # Create file nodes
 python create_nodes.py             # Convert to graph nodes
@@ -363,7 +354,7 @@ python download.network.py         # Export sample networks for GNN
 
 Run any of the GNN models with the prepared graph datasets:
 
-**Bash**
+
 ```bash
 # Run GCN model
 python GCN_32genes_unpaired.py \
