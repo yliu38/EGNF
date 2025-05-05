@@ -362,6 +362,7 @@ python download.network.py         # Export sample networks for GNN
 ### 8. GNN Training and Evaluation
 
 Run any of the GNN models with the prepared graph datasets:
+
 **Bash**
 ```bash
 # Run GCN model
