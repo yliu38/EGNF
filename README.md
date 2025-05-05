@@ -2,14 +2,23 @@
 
 If you use this tool in your work, please cite:  
 @article{liuExpressionGraphNetwork2025,
+
   title = {Expression Graph Network Framework for Biomarker Discovery},
+  
   author = {Liu, Yang and Huse, Jason T. and Kannan, Kasthuri},
+  
   year = {2025},
+  
   journal = {bioRxiv},
+  
   publisher = {Cold Spring Harbor Laboratory},
+  
   doi = {10.1101/2025.04.28.651033},
+  
   url = {https://www.biorxiv.org/content/10.1101/2025.04.28.651033v2},
+  
   note = {Preprint}
+  
 }
 
 
