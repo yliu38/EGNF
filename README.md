@@ -77,7 +77,7 @@ pip install torch-scatter torch-sparse torch-cluster torch-spline-conv -f https:
 pip install torch-geometric
 
 # Other dependencies
-pip install scikit-learn scikit-optimize numpy pandas py2neo 
+pip install scikit-learn scikit-optimize numpy pandas py2neo
 ```
 
 ### Neo4j Setup
@@ -349,10 +349,27 @@ python download.network.py         # Export sample networks for GNN
 
 ### 8. GNN Training and Evaluation
 
+Run any of the GNN models with the prepared graph datasets:
+
 ```bash
-# Run GNN with the prepared data
-# Adjust input paths and feature counts as needed
-python GCN_32genes_unpaired.py
+# Run GCN model
+python GCN_32genes_unpaired_argparse.py \
+  --n_fea 32 \
+  --label_file path/to/label_file.csv \
+  --label_train path/to/label_train.csv \
+  --label_test path/to/label_test.csv \
+  --atoms_df path/to/allnodes_features_unpaired.csv \
+  --bonds_df path/to/alledges_features_unpaired.csv \
+  --out_dir ./results
+
+# Run GCN-only (no edge features)
+python GCN_32genes_only_unpaired_argparse.py --n_fea 32 --label_file ... (same as above)
+
+# Run GAT model
+python GAT_32genes_unpaired_argparse.py --n_fea 32 --label_file ... (same as above)
+
+# Run GATv2 model
+python GATv2_32genes_unpaired_argparse.py --n_fea 32 --label_file ... (same as above)
 ```
 
 ## Troubleshooting
