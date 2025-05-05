@@ -1,6 +1,6 @@
 # Expression Graph Network Framework (EGNF)
 
-If you use this tool in your work, please cite [Read the paper on bioRxiv](https://doi.org/10.1101/2025.04.28.651033)
+If you use this tool in your work, please cite [https://doi.org/10.1101/2025.04.28.651033](https://doi.org/10.1101/2025.04.28.651033)
 ```bibtex
 @article{liuExpressionGraphNetwork2025,
   title     = {Expression Graph Network Framework for Biomarker Discovery},
