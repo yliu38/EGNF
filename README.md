@@ -9,7 +9,7 @@ If you use this tool in your work, please cite [https://doi.org/10.1101/2025.04.
   journal   = {bioRxiv},
   publisher = {Cold Spring Harbor Laboratory},
   doi       = {10.1101/2025.04.28.651033},
-  url       = {https://www.biorxiv.org/content/10.1101/2025.04.28.651033v2},
+  url       = {https://doi.org/10.1101/2025.04.28.651033},
   note      = {Preprint}
 }
 ```
