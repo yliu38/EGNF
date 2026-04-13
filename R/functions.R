@@ -25,7 +25,7 @@ norm_dat <- function(df, nor) {
 
 
 # making trees
-make_tree <- function(dat, directory, group_label) {
+make_tree <- function(dat, directory, group_label = NULL) {
   no_of_genes <- dim(dat)[1]
   gene_names <- rownames(dat)
   
@@ -37,73 +37,58 @@ make_tree <- function(dat, directory, group_label) {
   transposed_ge_df <- t(ge_df_matrix)
   transposed_ge_df <- as.data.frame(transposed_ge_df)
   
-  
   # For each gene we make the tree
   for (gene_no in seq(no_of_genes)) {
-    # Print the gene name and the number
     print(paste("Working on gene no.", gene_no, ":", gene_names[gene_no]))
     
-    # Get the data for the gene
     gene_df <- as.data.frame(transposed_ge_df[gene_no])
-    # head(gene_df)
     gene_name = colnames(gene_df)
     
-    # Get the gene events
-    ## Dissimilarity matrix based on euclidean distance
     d <- dist(gene_df, method = "euclidean")
-    ## Hierarchical clustering using median linkage
-    hc1 <- hclust(d, method = "median" )
-    ## Generate dendrogram
+    hc1 <- hclust(d, method = "median")
     dend <- as.dendrogram(hc1)
-    ## Get levels (depth)
+    
     tree <- as.Node(dend)
     levels <- tree$Get("level")
-    ## Return all the nodes in the tree with corresponding samples
     gene_events <- partition_leaves(dend)
-    
-    ## get dendrogram height
     height <- get_nodes_attr(dend, "height")
     
-    
-    # Create an empty data frame to append the result of each gene tree events
     df <- data.frame(matrix(ncol = 7, nrow = 0))
     
     for (i in seq(gene_events)) {
-      
-      # Get event characteristics
       event_no <- i
-      # Get event samples
       unlisted_samples <- unlist(gene_events[i])
-      samples <- paste(unlisted_samples, collapse=",")
-      # Get median gene expression
+      samples <- paste(unlisted_samples, collapse = ",")
+      
       patients_ge <- gene_df %>% filter(row.names(gene_df) %in% unlisted_samples)
       median_exp <- median(patients_ge[[1]])
       
-      # Get the number of samples and if there is only one sample, its a leaf
       no_of_samples <- length(unlisted_samples)
-      if (no_of_samples == 1) {
-        leaf_status <- 1
-      } else {
-        leaf_status <- 0
-      }
-      # Append the above data frame to df
-      df <- rbind(df, c(event_no, samples, median_exp, no_of_samples, gene_name, 'gene_expression', leaf_status))
+      leaf_status <- ifelse(no_of_samples == 1, 1, 0)
+      
+      df <- rbind(df, c(event_no, samples, median_exp, no_of_samples, 
+                        gene_name, 'gene_expression', leaf_status))
     }
     
-    # add height
     df$hegith <- height
     df$levels <- levels
-    # select top 10%
-    df <- df[order(abs(as.numeric(df[,3])), decreasing = T),]
-    nevent <- round(nrow(df) * 0.1)
-    df$include <- c(rep("Y",nevent),rep("N",nrow(df)-nevent)) 
-    df$group <- group_label
-    # Provide column names
-    colnames(df) <- c('event_no', 'samples', 'median_exp', 'no_of_samples', 'gene_name', 'event_name', 'leaf_status',"dendrogram_height",
-                      "levels", "include", "group")
     
-    file_name = paste(directory, gene_name, ".csv", sep="")
-    write.table(df, file=file_name, sep=",",row.names = F)
+    df <- df[order(abs(as.numeric(df[,3])), decreasing = TRUE),]
+    nevent <- round(nrow(df) * 0.1)
+    df$include <- c(rep("Y", nevent), rep("N", nrow(df) - nevent))
+    
+    # Only add group column if provided
+    if (!is.null(group_label)) {
+      df$group <- group_label
+    }
+    
+    colnames(df) <- c('event_no', 'samples', 'median_exp', 'no_of_samples',
+                      'gene_name', 'event_name', 'leaf_status',
+                      "dendrogram_height", "levels", "include",
+                      if (!is.null(group_label)) "group" else NULL)
+    
+    file_name = paste(directory, gene_name, ".csv", sep = "")
+    write.table(df, file = file_name, sep = ",", row.names = FALSE)
   }
 }
 
