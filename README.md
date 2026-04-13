@@ -1,5 +1,23 @@
 # Expression Graph Network Framework (EGNF)
 
+## ⚠️ Note on Graph Construction and Data Leakage
+
+The graph (tree) generation process differs between **feature selection** and **prediction** tasks:
+
+- **Feature selection stage**  
+  Graphs need incorporate `group_label` (e.g., outcome or class labels) to identify informative structures or features.
+
+- **Prediction (inference) stage**  
+  Graph construction must be **fully unsupervised**.  
+  No outcome or class labels are used during clustering or tree generation.
+
+To support both use cases safely, the `make_tree` function includes an **optional `group_label` argument**:
+- If provided → used for feature selection  
+- If omitted → ensures label-free graph construction for prediction  
+
+> 🚨 **Important**  
+> Including labels during graph construction in the prediction stage introduces **data leakage**, leading to overly optimistic and invalid model performance.
+
 If you use this tool in your work, please cite [https://academic.oup.com/bib/article/26/5/bbaf559/8303424](https://academic.oup.com/bib/article/26/5/bbaf559/8303424)
 ```bibtex
 @article{liuExpressionGraphNetwork2025,
